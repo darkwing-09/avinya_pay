@@ -1410,6 +1410,15 @@ class InstallationManager
             throw new RuntimeException('Only MySQL is supported as the application database.');
         }
 
+        $options = [];
+        $caPath = env('MYSQL_ATTR_SSL_CA');
+        if (! $caPath && is_file('/etc/ssl/certs/ca-certificates.crt')) {
+            $caPath = '/etc/ssl/certs/ca-certificates.crt';
+        }
+        if ($caPath) {
+            $options[\PDO::MYSQL_ATTR_SSL_CA] = $caPath;
+        }
+
         config([
             'database.default' => 'mysql',
             'database.connections.mysql.host' => $data['db_host'],
@@ -1417,6 +1426,7 @@ class InstallationManager
             'database.connections.mysql.database' => $data['db_database'],
             'database.connections.mysql.username' => $data['db_username'],
             'database.connections.mysql.password' => $data['db_password'] ?? '',
+            'database.connections.mysql.options' => $options,
         ]);
 
         DB::purge('mysql');
@@ -1496,6 +1506,7 @@ class InstallationManager
             'DB_DATABASE' => $this->envValue($data['db_database']),
             'DB_USERNAME' => $this->envValue($data['db_username'] ?? ''),
             'DB_PASSWORD' => $this->envValue($data['db_password'] ?? ''),
+            'MYSQL_ATTR_SSL_CA' => $this->envValue('/etc/ssl/certs/ca-certificates.crt'),
         ];
 
         foreach ($replacements as $key => $value) {

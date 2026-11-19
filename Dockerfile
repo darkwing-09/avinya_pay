@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     curl \
+    ca-certificates \
     && docker-php-ext-install pdo pdo_mysql mbstring xml zip bcmath fileinfo
 
 # Configure Apache
