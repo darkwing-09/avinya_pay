@@ -98,7 +98,7 @@ class VerificationNodeIdentity
         $normalized = strtolower($identity);
 
         return in_array($normalized, [
-            'default', 'localhost', 'node', 'node-1', 'upi-gateway-node-1',
+            'default', 'localhost', 'node', 'node-1', 'avinyapay-node-1',
             'change-me', 'change-me-unique-node-id', 'your-node-id',
         ], true) || str_contains($normalized, 'change-me');
     }

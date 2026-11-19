@@ -9,8 +9,8 @@ Use `QUEUE_CONNECTION=database` and the shared `CACHE_STORE=database`. The norma
 For cPanel, replace both the PHP binary and application path with the values verified for your hosting account:
 
 ```cron
-* * * * * cd /home/ACCOUNT/upi-gateway && /opt/cpanel/ea-php82/root/usr/bin/php artisan schedule:run >> /home/ACCOUNT/upi-gateway/storage/logs/scheduler.log 2>&1
-* * * * * cd /home/ACCOUNT/upi-gateway && /opt/cpanel/ea-php82/root/usr/bin/php artisan queue:work database --queue=default --stop-when-empty --tries=6 --timeout=60 --sleep=3 >> /home/ACCOUNT/upi-gateway/storage/logs/queue-worker.log 2>&1
+* * * * * cd /home/ACCOUNT/avinyapay && /opt/cpanel/ea-php82/root/usr/bin/php artisan schedule:run >> /home/ACCOUNT/avinyapay/storage/logs/scheduler.log 2>&1
+* * * * * cd /home/ACCOUNT/avinyapay && /opt/cpanel/ea-php82/root/usr/bin/php artisan queue:work database --queue=default --stop-when-empty --tries=6 --timeout=60 --sleep=3 >> /home/ACCOUNT/avinyapay/storage/logs/queue-worker.log 2>&1
 ```
 
 See [CPANEL.md](CPANEL.md) for finding the binary and application path. Both entries are needed: the scheduler publishes durable intents into the queue; the worker attempts merchant HTTP delivery. The same Artisan commands work with the queue worker and scheduler configured in [VPS.md](VPS.md).

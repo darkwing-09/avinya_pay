@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
             stage = 'routing';
             const route = await fetchAt('__upi_deployment_check');
             routing = route.ok ? await route.json() : null;
-            if (!routing || routing.application !== 'upi-gateway' || routing.routing !== true) throw new Error('The application routing probe failed.');
+            if (!routing || routing.application !== 'avinyapay' || routing.routing !== true) throw new Error('The application routing probe failed.');
             const handler = routing.php_handler || {
                 status: routing.php_fpm ? 'supported' : 'unknown',
                 supported: routing.php_fpm === true,

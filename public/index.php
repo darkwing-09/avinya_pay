@@ -17,7 +17,7 @@ if (version_compare(PHP_VERSION, '8.2.0', '<')) {
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>PHP Version Error · UPI Gateway</title>
+        <title>PHP Version Error · AvinyaPay</title>
         <style>
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #1e293b; padding: 2rem; display: flex; align-items: center; justify-content: center; min-height: 80vh; margin: 0; }
             .card { background: white; max-width: 540px; width: 100%; padding: 2rem; border-radius: 1rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
@@ -46,7 +46,7 @@ if (! file_exists(__DIR__.'/../vendor/autoload.php')) {
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Setup Error · UPI Gateway</title>
+        <title>Setup Error · AvinyaPay</title>
         <style>
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 2rem; display: flex; align-items: center; justify-content: center; min-height: 85vh; }
             .card { background: #ffffff; max-width: 600px; width: 100%; padding: 2.25rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; }
@@ -69,11 +69,11 @@ if (! file_exists(__DIR__.'/../vendor/autoload.php')) {
                 <strong>Common Causes &amp; Solutions:</strong>
                 <ul>
                     <li><strong>Incomplete Extraction:</strong> Ensure the ZIP package fully extracted and your hosting account has enough disk space and file inode quota.</li>
-                    <li><strong>Nested Extraction:</strong> If your hosting File Manager extracted files into a subfolder (e.g., <code>upi-gateway-main/</code>), move all files directly into the website directory.</li>
-                    <li><strong>Alternative Download:</strong> Both the GitHub <code>main.zip</code> and official Release ZIP include pre-bundled dependencies. If your download was truncated, re-download the verified production package below.</li>
+                    <li><strong>Nested Extraction:</strong> If your hosting File Manager extracted files into a subfolder (e.g., <code>avinyapay-main/</code>), move all files directly into the website directory.</li>
+                    <li><strong>Alternative Download:</strong> Both the main archive and official Release ZIP include pre-bundled dependencies.</li>
                 </ul>
             </div>
-            <a href="https://github.com/mynkdev-21/upi-gateway/releases/download/latest-main/upi-gateway-production.zip" class="btn" target="_blank" rel="noopener">Download Ready-to-Install Package</a>
+            <a href="#" class="btn">Please contact your administrator</a>
         </div>
     </body>
     </html>
@@ -96,7 +96,7 @@ if (! is_file(__DIR__.'/../storage/installed') && $deploymentRequestPath === $de
     header('Content-Type: application/json');
     header('Cache-Control: no-store');
     echo json_encode([
-        'application' => 'upi-gateway',
+        'application' => 'avinyapay',
         'routing' => true,
         'runtime' => 'installer',
         'base_path' => $deploymentBasePath,

@@ -12,7 +12,7 @@
 
     <div>
         <label class="label">Full Name</label>
-        <input type="text" name="name" value="{{ old('name') }}" class="input @error('name') ring-red-400 @enderror" placeholder="Mayank Singh" required>
+        <input type="text" name="name" value="{{ old('name') }}" class="input @error('name') ring-red-400 @enderror" placeholder="Administrator" required>
         @error('name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
     </div>
 

@@ -33,7 +33,7 @@ Route::get('/__upi_deployment_check', function (Request $request, InstallationMa
         : DeploymentUrl::basePath($request->server->all());
 
     return response()->json([
-        'application' => 'upi-gateway', 'routing' => true, 'runtime' => 'laravel',
+        'application' => 'avinyapay', 'routing' => true, 'runtime' => 'laravel',
         'base_path' => $basePath,
         'cookie_path' => config('session.path'), 'csrf_token' => csrf_token(), 'probe' => $probe, 'diagnostic_token' => $diagnosticToken,
         'secure' => $request->isSecure(),

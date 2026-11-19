@@ -89,7 +89,7 @@ class DeploymentUrl
 
     public static function cookieName(string $url): string
     {
-        return 'upi_gateway_'.substr(hash('sha256', self::normalize($url)), 0, 16).'_session';
+        return 'avinyapay_'.substr(hash('sha256', self::normalize($url)), 0, 16).'_session';
     }
 
     public static function isPrivateRequest(string $relativePath): bool

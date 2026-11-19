@@ -26,9 +26,9 @@ sudo mysql
 ```
 
 ```sql
-CREATE DATABASE upi_gateway CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'upi_gateway'@'localhost' IDENTIFIED BY 'replace-with-a-strong-password';
-GRANT ALL PRIVILEGES ON upi_gateway.* TO 'upi_gateway'@'localhost';
+CREATE DATABASE avinyapay CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'avinyapay'@'localhost' IDENTIFIED BY 'replace-with-a-strong-password';
+GRANT ALL PRIVILEGES ON avinyapay.* TO 'avinyapay'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
 ```
@@ -41,9 +41,9 @@ To use an external or cloud-managed database server, configure `INSTALLER_ALLOW_
 
 1. **Option A: Pre-configure `.env` (Recommended):**
    ```bash
-   echo "INSTALLER_ALLOW_REMOTE_DB=true" > /var/www/upi-gateway/.env
-   sudo chown www-data:www-data /var/www/upi-gateway/.env
-   sudo chmod 600 /var/www/upi-gateway/.env
+   echo "INSTALLER_ALLOW_REMOTE_DB=true" > /var/www/avinyapay/.env
+   sudo chown www-data:www-data /var/www/avinyapay/.env
+   sudo chmod 600 /var/www/avinyapay/.env
    ```
 
 2. **Option B: PHP-FPM Pool Environment:**
@@ -57,22 +57,22 @@ Once enabled, you can enter your remote database hostname or IP (e.g. `db.intern
 
 ## 3. Place the application
 
-Upload or clone the release into `/var/www/upi-gateway`. If dependencies are not bundled, run `composer install --no-dev --prefer-dist --optimize-autoloader` before changing ownership. The deployed project must contain `vendor/autoload.php` and `public/build`.
+Upload or clone the release into `/var/www/avinyapay`. If dependencies are not bundled, run `composer install --no-dev --prefer-dist --optimize-autoloader` before changing ownership. The deployed project must contain `vendor/autoload.php` and `public/build`.
 
 ```bash
-sudo chown -R www-data:www-data /var/www/upi-gateway
-sudo chmod -R ug+rwX /var/www/upi-gateway/storage /var/www/upi-gateway/bootstrap/cache
+sudo chown -R www-data:www-data /var/www/avinyapay
+sudo chmod -R ug+rwX /var/www/avinyapay/storage /var/www/avinyapay/bootstrap/cache
 ```
 
 ## 4. Configure Nginx and PHP-FPM
 
-Create an Nginx site whose root is `/var/www/upi-gateway/public` and whose PHP handler points to the installed PHP-FPM socket, for example:
+Create an Nginx site whose root is `/var/www/avinyapay/public` and whose PHP handler points to the installed PHP-FPM socket, for example:
 
 ```nginx
 server {
     listen 80;
     server_name your-domain.example;
-    root /var/www/upi-gateway/public;
+    root /var/www/avinyapay/public;
 
     index index.php;
     location / { try_files $uri $uri/ /index.php?$query_string; }
@@ -108,7 +108,7 @@ Open `https://your-domain.example/`. The wizard checks PHP/PDO MySQL and writabl
 Run the queue worker under Supervisor or systemd, and schedule Laravel's scheduler once per minute:
 
 ```cron
-* * * * * cd /var/www/upi-gateway && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /var/www/avinyapay && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 Keep `APP_DEBUG=false`, use HTTPS, restrict SSH and MySQL exposure, and back up the MySQL database before migrations.
@@ -144,7 +144,7 @@ To rotate `APP_KEY` without terminating active merchant sessions:
 ### Safe Migration Procedure for Existing Installations
 If migrating an existing production VPS from `SESSION_ENCRYPT=false` to `SESSION_ENCRYPT=true`:
 1. Inform users of a brief session reset, or perform the migration during low-traffic maintenance windows.
-2. In `/var/www/upi-gateway/.env`, set `SESSION_ENCRYPT=true`.
+2. In `/var/www/avinyapay/.env`, set `SESSION_ENCRYPT=true`.
 3. Refresh the configuration cache: `php artisan config:cache`.
 4. Existing plaintext database sessions cannot be decrypted under encryption mode. Laravel catches decryption exceptions gracefully, discards the unencrypted payload without HTTP 500 errors, and redirects the user to log in again.
 5. All subsequent sessions are stored encrypted.
@@ -157,6 +157,6 @@ If a server configuration error previously allowed direct web access to `.env` o
 2. **Rotate Application Key (`APP_KEY`):**
    - Place old `APP_KEY` into `APP_PREVIOUS_KEYS`.
    - Generate and set a new `APP_KEY`.
-3. **Rotate Provider Keys:** In the Paytm and PhonePe merchant dashboards, generate new API keys, MID/salt credentials, and webhook secrets; update them in the UPI Gateway dashboard.
+3. **Rotate Provider Keys:** In the Paytm and PhonePe merchant dashboards, generate new API keys, MID/salt credentials, and webhook secrets; update them in the AvinyaPay dashboard.
 4. **Rotate Admin Passwords:** Change all administrator passwords.
 5. **Inspect Nginx Access Logs:** Check `/var/log/nginx/access.log` for access to `/.env`, `/.git`, or `/storage/logs/`.

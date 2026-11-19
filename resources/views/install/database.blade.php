@@ -11,7 +11,7 @@
 
     <div>
         <label class="label">App Name</label>
-        <input type="text" name="app_name" value="{{ old('app_name', 'UPI Gateway') }}" class="input" required>
+        <input type="text" name="app_name" value="{{ old('app_name', 'AvinyaPay') }}" class="input" required>
     </div>
 
     <div>
@@ -39,7 +39,7 @@
         </div>
         <div>
             <label class="label">Database Name</label>
-            <input type="text" name="db_database" value="{{ old('db_database', 'upi_gateway') }}" class="input" placeholder="upi_gateway">
+            <input type="text" name="db_database" value="{{ old('db_database', 'avinyapay') }}" class="input" placeholder="avinyapay">
         </div>
         <div class="grid gap-3 sm:grid-cols-2">
             <div>

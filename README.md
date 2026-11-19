@@ -1,4 +1,4 @@
-# 🏦 UPI Gateway
+# 🏦 AvinyaPay
 
 <h3 align="center">A Multi-Merchant UPI Payment Gateway</h3>
 
@@ -25,16 +25,12 @@
 
 ## 🚀 Quick Installation
 
-UPI Gateway includes a browser-based installer. For a hosting-server installation, use the prepared production package: it includes the production `vendor/` dependencies and compiled frontend assets, so **SSH, Composer, Node.js, and npm are not required on the hosting server**.
+AvinyaPay includes a browser-based installer. For a hosting-server installation, use the prepared production package: it includes the production `vendor/` dependencies and compiled frontend assets, so **SSH, Composer, Node.js, and npm are not required on the hosting server**.
 
-### 1. Download the production package
+### 1. Download the package
 
-| Package | Download |
-|---|---|
-| **Recommended — Production ZIP** | [Download `upi-gateway-production.zip`](https://github.com/mynkdev-21/upi-gateway/releases/download/latest-main/upi-gateway-production.zip) |
-| GitHub source archive | [Download `main.zip`](https://github.com/mynkdev-21/upi-gateway/archive/refs/heads/main.zip) |
+Download the latest release package or clone the repository to your hosting server.
 
-The production ZIP is the preferred choice for installation. You can verify it with the accompanying [SHA-256 checksum](https://github.com/mynkdev-21/upi-gateway/releases/download/latest-main/upi-gateway-production.zip.sha256).
 
 ### 2. Prepare your hosting
 
@@ -74,53 +70,18 @@ After installation, sign in to the admin dashboard. The installer is locked afte
 > [!WARNING]
 > Do not accept live payments until you have checked the production security checklist, configured queue/scheduler tasks, and completed your own payment-provider and hosting tests. Local automated tests do not prove compatibility with every hosting provider or UPI app.
 
-### Free installation support
-
-Need help? We provide free installation guidance for UPI Gateway users.
-
-- **[WhatsApp Installation Support](https://wa.me/916388401024)**
-- **[Open a GitHub issue](https://github.com/mynkdev-21/upi-gateway/issues)**
-
-When asking for help, share your hosting provider, PHP version, deployment type (main domain, subdomain, or subdirectory), and a screenshot of the error.
-
-**Never share hosting/SSH passwords, database passwords, API secrets, or your `.env` file.**
 
 ---
 
-## 🌐 Live Demo
-
-Explore the UPI Gateway application through our live demo:
-
-**Live Demo:** [https://appnk.site/](https://appnk.site/)
-
-**Demo Login Credentials:**
-
-- Email: `demo@test.com`
-- Password: `demo@test.com`
-
-**Demo Mode — Read Only**
-
-The demo environment allows visitors to log in and explore the application, including the dashboard, orders, accounts and available modules.
-
-For security reasons, all data modification operations are disabled for demo users. Creating, editing, deleting, submitting orders and initiating payments are not permitted.
-
-The demo account has restricted merchant-level access and cannot access administrative functions or API credentials.
 
 ---
 
-## 📦 Release Status
-
-**v1.1.0 is currently a stable release candidate; a v1.1.0 Git tag and GitHub Release have not been published.** The rolling production package is published at the download link above.
-
-The project includes the browser installer, MySQL production configuration, payment-verification integrations, timestamped webhook signatures, and hosting guides. External verification is still required for each target hosting environment, cron behavior under production conditions, and real-device payment flows with GPay, PhonePe, Paytm, and BHIM. Review the deployment guides and complete your own environment-specific testing before accepting live payments.
-
-[![Build Production Package](https://github.com/mynkdev-21/upi-gateway/actions/workflows/build-package.yml/badge.svg?branch=main)](https://github.com/mynkdev-21/upi-gateway/actions/workflows/build-package.yml)
 
 ---
 
 ## 📖 Overview
 
-UPI Gateway is a self-hosted, multi-merchant payment management platform designed for businesses that want to integrate UPI payments into their applications.
+AvinyaPay is a self-hosted, multi-merchant payment management platform designed for businesses that want to integrate UPI payments into their applications.
 
 Each merchant can configure their own UPI accounts, generate dynamic payment QR codes, track transactions, and receive automated payment notifications.
 
@@ -147,7 +108,7 @@ Each merchant can configure their own UPI accounts, generate dynamic payment QR 
 
 ### Homepage
 <p align="center">
-  <img src="screenshots/1-home.png" width="100%" alt="UPI Gateway Homepage"/>
+  <img src="screenshots/1-home.png" width="100%" alt="AvinyaPay Homepage"/>
 </p>
 
 ### Features
@@ -247,7 +208,7 @@ Each merchant can configure their own UPI accounts, generate dynamic payment QR 
 ```mermaid
 flowchart TD
     A[Customer Application] --> B[Merchant Backend]
-    B --> C[UPI Gateway API]
+    B --> C[AvinyaPay API]
     C --> D[Order Creation]
     D --> E[UPI QR / Hosted Checkout]
     E --> F[Customer UPI App]
@@ -293,7 +254,7 @@ flowchart TD
 
 ## 🚀 Installation
 
-Install UPI Gateway using the browser-based wizard included in the prepared production package. The hosting server does not need SSH, Composer, Node.js, or npm.
+Install AvinyaPay using the browser-based wizard included in the prepared production package. The hosting server does not need SSH, Composer, Node.js, or npm.
 
 ### Server requirements
 
@@ -307,7 +268,7 @@ Install UPI Gateway using the browser-based wizard included in the prepared prod
 
 ### Installation steps
 
-1. **Download:** Use the [production ZIP](https://github.com/mynkdev-21/upi-gateway/releases/download/latest-main/upi-gateway-production.zip). The [SHA-256 checksum](https://github.com/mynkdev-21/upi-gateway/releases/download/latest-main/upi-gateway-production.zip.sha256) is provided for integrity verification.
+1. **Download:** Download or clone the release files into your application directory.
 2. **Prepare the database:** Create a MySQL database and user, then grant the user the required privileges. In cPanel, use **MySQL Database Wizard** or **MySQL Databases**. Save the full database name, username, and password; cPanel may prepend your account name.
 3. **Upload and extract:** Upload the ZIP using your hosting File Manager and extract it into the application directory described in your hosting guide.
 4. **Configure the public directory:** Set the website's Document Root / Running Directory to the application's `public/` directory. Keep the Laravel project files outside the public web root. For subdirectory deployments or Nginx, follow the relevant guide; panel settings and web-server rules differ by host.
@@ -325,14 +286,6 @@ Install UPI Gateway using the browser-based wizard included in the prepared prod
 
 **Subdirectory warning:** A URL such as `https://example.com/payments/` needs web-server routing that maps that URL prefix to the application's `public/` directory. `.htaccess` rules do not apply to Nginx. Follow the hosting guide and do not overwrite the existing main website's configuration.
 
-### Need installation help?
-
-We provide free installation guidance:
-
-- **[WhatsApp Installation Support](https://wa.me/916388401024)**
-- **[GitHub Issues](https://github.com/mynkdev-21/upi-gateway/issues)**
-
-When contacting support, include your hosting provider, PHP version, deployment type (main domain, subdomain, or subdirectory), and a screenshot of the issue. **Never send passwords, API secrets, SSH credentials, or `.env` files.**
 
 ---
 
@@ -342,14 +295,14 @@ For command-line or development deployments, configure the following variables i
 
 | Variable | Description | Example |
 |---|---|---|
-| `APP_NAME` | Application name | UPI Gateway |
+| `APP_NAME` | Application name | AvinyaPay |
 | `APP_ENV` | Application environment | production |
 | `APP_DEBUG` | Debug mode | false |
 | `ALLOW_REGISTRATION` | Public merchant signup; disabled by default. | false |
 | `APP_URL` | Application URL | https://example.com |
 | `DB_CONNECTION` | Database driver | mysql |
 | `DB_HOST` | Database host | 127.0.0.1 |
-| `DB_DATABASE` | Database name | upi_gateway |
+| `DB_DATABASE` | Database name | avinyapay |
 | `DB_USERNAME` | Database username | db_user |
 | `DB_PASSWORD` | Database password | Strong password |
 | `QUEUE_CONNECTION` | Queue driver | database |
@@ -385,7 +338,7 @@ Example MySQL environment configuration for deployments managed through the comm
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=upi_gateway
+DB_DATABASE=avinyapay
 DB_USERNAME=db_user
 DB_PASSWORD=your_password
 ```
@@ -622,7 +575,7 @@ composer run test
 ## 📂 Project Structure
 
 ```text
-upi-gateway/
+avinyapay/
 │
 ├── app/
 │   ├── Http/
@@ -664,44 +617,6 @@ See the `LICENSE` file for details.
 
 ---
 
-## 📬 Contact & Connect
-
-Have a question, collaboration idea, business inquiry, or technical discussion? Feel free to get in touch.
-
 <p align="center">
-  <a href="mailto:mayanksingh3132@gmail.com">
-    <img src="https://img.shields.io/badge/Email-Contact_Me-EA4335?style=for-the-badge&logo=gmail&logoColor=white" alt="Email"/>
-  </a>
-  <a href="https://linkedin.com/in/mynk-dev">
-    <img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
-  </a>
-  <a href="https://t.me/mayankdeveloper">
-    <img src="https://img.shields.io/badge/Telegram-Message-26A5E4?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram"/>
-  </a>
-  <a href="https://github.com/mynkdev-21">
-    <img src="https://img.shields.io/badge/GitHub-Follow-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/>
-  </a>
-</p>
-
-### 🌐 Professional Links
-
-| Platform | Details |
-|---|---|
-| 📧 Email | mayanksingh3132@gmail.com |
-| 🌐 Portfolio | [mayankdeveloper.site](https://mayankdeveloper.site) |
-| 💼 LinkedIn | [linkedin.com/in/mynk-dev](https://linkedin.com/in/mynk-dev) |
-| 🏢 Company | [amtechinfo.online](https://amtechinfo.online) |
-| ✈️ Telegram | [@mayankdeveloper](https://t.me/mayankdeveloper) |
-| 🐙 GitHub | [@mynkdev-21](https://github.com/mynkdev-21) |
-
----
-
-<p align="center">
-  <b>Have an idea? Let's build something great together.</b>
-  <br/>
-  <sub>Mayank Singh · Full Stack Developer · Founder @ AmTech INFO</sub>
-</p>
-
-<p align="center">
-  <b>Built with ❤️ for Indian merchants.</b>
+  <b>AvinyaPay — Built for Indian merchants.</b>
 </p>

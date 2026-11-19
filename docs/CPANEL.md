@@ -53,29 +53,29 @@ You can obtain the ready-to-install package using any of the following methods:
 The `main` branch is configured as a complete distribution containing pre-bundled `vendor/` production dependencies and compiled frontend assets in `public/build/`. Development tools, internal scripts, and test suites are automatically excluded via `.gitattributes`.
 
 1. Download directly from GitHub:
-   - Click the green **Code** button on GitHub and choose **Download ZIP**, or use the direct link: [**Download `main.zip`**](https://github.com/mynkdev-21/upi-gateway/archive/refs/heads/main.zip).
-2. Note on extraction: GitHub's native ZIP places files inside a top-level `upi-gateway-main/` folder. When you extract it in File Manager, open `upi-gateway-main/`, select all files, and click **Move** to move them into your target application or website root directory.
+   - Click the green **Code** button on GitHub and choose **Download ZIP**, or use the direct link: [**Download `main.zip`**](#).
+2. Note on extraction: GitHub's native ZIP places files inside a top-level `avinyapay-main/` folder. When you extract it in File Manager, open `avinyapay-main/`, select all files, and click **Move** to move them into your target application or website root directory.
 
 #### Option B: Standalone Production Release Package (With SHA-256)
 Every push to `main` automatically builds, tests, and publishes a verified, flat production package to the rolling GitHub Release:
 
 1. Download the latest production package directly:
-   - **Direct ZIP**: [**Download `upi-gateway-production.zip`**](https://github.com/mynkdev-21/upi-gateway/releases/download/latest-main/upi-gateway-production.zip)
-   - **Checksum**: [**`upi-gateway-production.zip.sha256`**](https://github.com/mynkdev-21/upi-gateway/releases/download/latest-main/upi-gateway-production.zip.sha256)
+   - **Direct ZIP**: [**Download `avinyapay-production.zip`**](#)
+   - **Checksum**: [**`avinyapay-production.zip.sha256`**](#.sha256)
 2. (Optional) Verify package integrity:
    ```bash
-   sha256sum -c upi-gateway-production.zip.sha256
+   sha256sum -c avinyapay-production.zip.sha256
    # Or on macOS:
-   shasum -a 256 -c upi-gateway-production.zip.sha256
+   shasum -a 256 -c avinyapay-production.zip.sha256
    ```
 3. Note on extraction: This package is completely flat and extracts directly into your target directory without an extra nested folder.
 
 #### Option C: Download via GitHub Actions Artifacts
 You can also download build artifacts from any individual GitHub Actions run:
-1. Open the repository on GitHub and navigate to the **Actions** tab &rarr; [Build Production Package](https://github.com/mynkdev-21/upi-gateway/actions/workflows/build-package.yml).
+1. Open the repository on GitHub and navigate to the **Actions** tab &rarr; [Build Production Package](#).
 2. Select the latest completed run on `main`.
-3. Scroll to the **Artifacts** section at the bottom and click `upi-gateway-main-<commit>` to download.
-4. Extract the downloaded artifact bundle on your computer to reveal the inner `upi-gateway-production.zip`.
+3. Scroll to the **Artifacts** section at the bottom and click `avinyapay-main-<commit>` to download.
+4. Extract the downloaded artifact bundle on your computer to reveal the inner `avinyapay-production.zip`.
 
 #### Option D: Build locally from source
 If you have Git, PHP 8.2+, Composer, and Node.js installed on your machine:
@@ -89,7 +89,7 @@ If you have Git, PHP 8.2+, Composer, and Node.js installed on your machine:
 
 - **Dedicated Domain or Subdomain:**
   - Create or select the domain/subdomain in cPanel **Domains**.
-  - Set the **Document Root** directly to the `public/` directory (e.g. `/home/ACCOUNT/upi-gateway/public` or `/home/ACCOUNT/public_html/public`).
+  - Set the **Document Root** directly to the `public/` directory (e.g. `/home/ACCOUNT/avinyapay/public` or `/home/ACCOUNT/public_html/public`).
   - Upload the production package ZIP, extract it into the project folder, and ensure `storage/` and `bootstrap/cache/` are writable (`775`).
 - **Subdirectory Deployment (e.g., `https://example.com/payment`):**
   - Extract the application package directly into the desired subdirectory (e.g. `public_html/payment`).
@@ -102,13 +102,13 @@ If you have Git, PHP 8.2+, Composer, and Node.js installed on your machine:
 
 - **Dedicated Website:**
   - In aaPanel **File Manager**, navigate to your website root (e.g. `/www/wwwroot/yourdomain.com`).
-  - Upload the package ZIP and click **Uncompress**. Move files out of `upi-gateway-main/` directly into the website root if needed.
+  - Upload the package ZIP and click **Uncompress**. Move files out of `avinyapay-main/` directly into the website root if needed.
   - In aaPanel **Website** &rarr; Click your domain &rarr; **Site directory**:
     - Set **Site directory** to `/www/wwwroot/yourdomain.com`.
     - Set **Running directory** to `/public` and click **Save**. *(MANDATORY FOR SECURITY)*
   - In **URL rewrite**, select `laravel5` and click **Save**.
 - **Subdirectory Under Existing Website (e.g., `/repotest/`):**
-  - If deploying UPI Gateway inside a subdirectory of an existing aaPanel website where the main domain's document root cannot be changed:
+  - If deploying AvinyaPay inside a subdirectory of an existing aaPanel website where the main domain's document root cannot be changed:
   - Configure a public-only mount using the installer-generated configuration described in [Domains, subdomains and subdirectories](DEPLOYMENT.md). Keep the main website's root unchanged. The installer asks for the PHP-FPM address from the active panel PHP handler rather than guessing it.
   - Back up the active domain configuration, validate it through the panel before reloading, and run the browser routing/assets/private-file checks. Do not enter database credentials while private files remain publicly reachable.
 
@@ -129,12 +129,12 @@ If you have Git, PHP 8.2+, Composer, and Node.js installed on your machine:
 
 ### Dedicated application directory (cPanel / aaPanel)
 1. **cPanel**:
-   - In cPanel **File Manager**, create a directory outside `public_html`, e.g., `/home/ACCOUNT/upi-gateway`.
-   - Upload the downloaded ZIP (`main.zip` or `upi-gateway-production.zip`) and extract it directly into that directory. If using `main.zip`, move the contents out of the extracted `upi-gateway-main/` subfolder into the application directory.
-   - Set your domain's Document Root to `/home/ACCOUNT/upi-gateway/public` in **Domains** or **Subdomains**.
+   - In cPanel **File Manager**, create a directory outside `public_html`, e.g., `/home/ACCOUNT/avinyapay`.
+   - Upload the downloaded ZIP (`main.zip` or `avinyapay-production.zip`) and extract it directly into that directory. If using `main.zip`, move the contents out of the extracted `avinyapay-main/` subfolder into the application directory.
+   - Set your domain's Document Root to `/home/ACCOUNT/avinyapay/public` in **Domains** or **Subdomains**.
 2. **aaPanel / Baota (Nginx)**:
    - In aaPanel **File Manager**, navigate to your website root (e.g. `/www/wwwroot/yourdomain.com`).
-   - Upload the downloaded ZIP and click **Uncompress**. If using `main.zip`, move the contents out of `upi-gateway-main/` directly into the website root. Ensure all files reside in the website root (do not keep them inside a subfolder).
+   - Upload the downloaded ZIP and click **Uncompress**. If using `main.zip`, move the contents out of `avinyapay-main/` directly into the website root. Ensure all files reside in the website root (do not keep them inside a subfolder).
    - In aaPanel **Website** &rarr; Click your domain &rarr; **Site directory**:
      - Set **Site directory** to your application folder.
      - Set **Running directory** to `/public` and click **Save**. *(MANDATORY FOR SECURITY)*
@@ -198,7 +198,7 @@ The installer inspects PHP version, all 11 required extensions, and writable sto
 
 ### 2. Database & Application Configuration
 Enter:
-- **Application Name**: e.g., `Acme UPI Gateway`
+- **Application Name**: e.g., `Acme AvinyaPay`
 - **Application URL**: `https://yourdomain.com` (must match your actual HTTPS domain)
 - **Database Host & Port**: `127.0.0.1` and `3306`
 - **Database Name & User**: Full prefixed values from Step 3
@@ -222,13 +222,13 @@ The application requires two one-minute cron jobs in cPanel **Cron Jobs** to pro
 
 ### 1. Scheduler Cron (Every minute: `* * * * *`)
 ```cron
-* * * * * cd /home/ACCOUNT/upi-gateway && /usr/local/bin/php artisan schedule:run >> /home/ACCOUNT/upi-gateway/storage/logs/scheduler.log 2>&1
+* * * * * cd /home/ACCOUNT/avinyapay && /usr/local/bin/php artisan schedule:run >> /home/ACCOUNT/avinyapay/storage/logs/scheduler.log 2>&1
 ```
 *Purpose*: Dispatches pending webhook outbox events, checks pending order provider statuses, expires unpaid orders, and recovers late payments.
 
 ### 2. Queue Worker Cron (Every minute: `* * * * *`)
 ```cron
-* * * * * cd /home/ACCOUNT/upi-gateway && /usr/local/bin/php artisan queue:work database --queue=default --stop-when-empty --max-time=50 --tries=6 --timeout=60 --memory=128 --sleep=3 >> /home/ACCOUNT/upi-gateway/storage/logs/queue.log 2>&1
+* * * * * cd /home/ACCOUNT/avinyapay && /usr/local/bin/php artisan queue:work database --queue=default --stop-when-empty --max-time=50 --tries=6 --timeout=60 --memory=128 --sleep=3 >> /home/ACCOUNT/avinyapay/storage/logs/queue.log 2>&1
 ```
 *Purpose*: Executes queued webhook delivery jobs to merchant webhook endpoints with backoff retries.
 
@@ -307,17 +307,17 @@ Use the path supplied by your host rather than assuming `/usr/local/bin/php`.
 In **File Manager**, open the directory containing `artisan`, `app/`, `public/`, and `vendor/`. That directory is the Laravel application path, for example:
 
 ```text
-/home/ACCOUNT/upi-gateway
+/home/ACCOUNT/avinyapay
 ```
 
-Do not use the `public/` subdirectory as the working directory for Artisan commands. The domain document root is `/home/ACCOUNT/upi-gateway/public`, but the cron working directory is `/home/ACCOUNT/upi-gateway`.
+Do not use the `public/` subdirectory as the working directory for Artisan commands. The domain document root is `/home/ACCOUNT/avinyapay/public`, but the cron working directory is `/home/ACCOUNT/avinyapay`.
 
 ### Add the scheduler cron
 
 In **Cron Jobs**, add a job that runs every minute. Replace `ACCOUNT`, the application path, and the PHP binary with your actual values:
 
 ```cron
-* * * * * cd /home/ACCOUNT/upi-gateway && /opt/cpanel/ea-php82/root/usr/bin/php artisan schedule:run >> /home/ACCOUNT/upi-gateway/storage/logs/scheduler.log 2>&1
+* * * * * cd /home/ACCOUNT/avinyapay && /opt/cpanel/ea-php82/root/usr/bin/php artisan schedule:run >> /home/ACCOUNT/avinyapay/storage/logs/scheduler.log 2>&1
 ```
 
 The scheduled `orders:check-pending` command operates with independent, bounded dual-phase execution protected by command-level distributed locking (`Cache::lock('scheduler:orders:check-pending')`) and `withoutOverlapping()`:
@@ -331,7 +331,7 @@ Both phases are isolated with dedicated error boundaries so pending exceptions o
 Add a second cron job to process background webhook deliveries reliably without Supervisor or long-running daemon processes:
 
 ```cron
-* * * * * cd /home/ACCOUNT/upi-gateway && /opt/cpanel/ea-php82/root/usr/bin/php artisan queue:work database --queue=default --stop-when-empty --max-time=50 --tries=6 --timeout=60 --memory=128 --sleep=3 >> /home/ACCOUNT/upi-gateway/storage/logs/queue.log 2>&1
+* * * * * cd /home/ACCOUNT/avinyapay && /opt/cpanel/ea-php82/root/usr/bin/php artisan queue:work database --queue=default --stop-when-empty --max-time=50 --tries=6 --timeout=60 --memory=128 --sleep=3 >> /home/ACCOUNT/avinyapay/storage/logs/queue.log 2>&1
 ```
 
 **Options explained for cPanel shared hosting**:
@@ -347,14 +347,14 @@ Shared-hosting cron jobs output to dedicated files in `storage/logs/`:
 
 1. **Queue Worker Activity**:
    ```bash
-   cat /home/ACCOUNT/upi-gateway/storage/logs/queue.log
+   cat /home/ACCOUNT/avinyapay/storage/logs/queue.log
    # Or monitor live output if terminal is available:
-   tail -n 50 -f /home/ACCOUNT/upi-gateway/storage/logs/queue.log
+   tail -n 50 -f /home/ACCOUNT/avinyapay/storage/logs/queue.log
    ```
 2. **Scheduler Execution**:
    ```bash
-   cat /home/ACCOUNT/upi-gateway/storage/logs/scheduler.log
-   tail -n 50 -f /home/ACCOUNT/upi-gateway/storage/logs/scheduler.log
+   cat /home/ACCOUNT/avinyapay/storage/logs/scheduler.log
+   tail -n 50 -f /home/ACCOUNT/avinyapay/storage/logs/scheduler.log
    ```
 3. **Structured Application & Queue Events**:
    Structured log entries for queue worker lifecycle events (`started processing job`, `completed job successfully`, `encountered exception`, and `failed permanently`) are automatically written to `storage/logs/laravel.log` without exposing merchant secrets, API keys, or payment credentials.
@@ -394,8 +394,8 @@ If maintenance or database migration is required:
 Appending cron output (`>> storage/logs/queue.log 2>&1`) will cause log files to grow over time on busy production systems. To prevent filling up your cPanel disk quota:
 1. Configure cPanel log rotation or add a weekly maintenance cron:
    ```cron
-   0 0 * * 0 truncate -s 0 /home/ACCOUNT/upi-gateway/storage/logs/queue.log
-   0 0 * * 0 truncate -s 0 /home/ACCOUNT/upi-gateway/storage/logs/scheduler.log
+   0 0 * * 0 truncate -s 0 /home/ACCOUNT/avinyapay/storage/logs/queue.log
+   0 0 * * 0 truncate -s 0 /home/ACCOUNT/avinyapay/storage/logs/scheduler.log
    ```
 2. Or use daily log rotation for Laravel logs by setting `LOG_STACK=daily` or `LOG_DAILY_DAYS=14` in `.env`.
 
@@ -433,7 +433,7 @@ New installations generated from the `.env.example` template have `SESSION_ENCRY
 ### Enabling Encryption on an Existing cPanel Site
 If upgrading an existing cPanel installation that had `SESSION_ENCRYPT=false`:
 1. Note that enabling encryption invalidates active sessions on their next request. Merchants and administrators currently logged in will be prompted to re-enter their credentials. The application handles this gracefully without HTTP 500 errors.
-2. In cPanel **File Manager**, edit `/home/USERNAME/upi_gateway/.env` (enable "Show Hidden Files" in Settings).
+2. In cPanel **File Manager**, edit `/home/USERNAME/avinyapay/.env` (enable "Show Hidden Files" in Settings).
 3. Set `SESSION_ENCRYPT=true`.
 4. In cPanel Terminal (or via SSH), clear and rebuild cache:
    ```bash

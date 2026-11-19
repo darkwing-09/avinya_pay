@@ -8,11 +8,11 @@ The wizard writes `ALLOW_REGISTRATION=false` to `.env`; public `/register` GET a
 
 The Installation Wizard is completely passwordless, secure, and beginner-friendly without requiring manual tokens, setup passwords, or HTTP Basic Authentication. On first access, the wizard inspects requirements and allows you to proceed directly to database setup. For security, database hosts must be local (`127.0.0.1` or `localhost`), ensuring external visitors cannot hijack uninstalled applications. An existing installation stays locked during a database outage; an incomplete first-time installation can safely resume.
 
-Verify PHP 8.2+ and required extensions: PDO, PDO MySQL, OpenSSL, mbstring, tokenizer, JSON, cURL, fileinfo, XML, and BCMath. Ensure PHP Session Support is enabled, and pre-compiled production assets (`public/build/manifest.json`) are present. Create an empty MySQL 8.x or MariaDB 10.x/11.x database and a user able to create and alter tables. The prepared package must contain `vendor/autoload.php` and `public/build/`. Pre-built production packages are available directly via **GitHub Code → Download ZIP** (`main.zip`), from [GitHub Releases (`latest-main`)](https://github.com/mynkdev-21/upi-gateway/releases/tag/latest-main), or as GitHub Actions artifacts (see [CPANEL.md](CPANEL.md#obtaining-the-production-package)).
+Verify PHP 8.2+ and required extensions: PDO, PDO MySQL, OpenSSL, mbstring, tokenizer, JSON, cURL, fileinfo, XML, and BCMath. Ensure PHP Session Support is enabled, and pre-compiled production assets (`public/build/manifest.json`) are present. Create an empty MySQL 8.x or MariaDB 10.x/11.x database and a user able to create and alter tables. The prepared package must contain `vendor/autoload.php` and `public/build/`. Pre-built production packages are available directly via **GitHub Code → Download ZIP** (`main.zip`), from [GitHub Releases (`latest-main`)](#), or as GitHub Actions artifacts (see [CPANEL.md](CPANEL.md#obtaining-the-production-package)).
 
 ### Universal Deployment Topologies
 
-UPI Gateway natively supports three deployment patterns:
+AvinyaPay natively supports three deployment patterns:
 
 1. **Main domain:** `https://example.com/` (Document Root set to `public/`).
 2. **Subdomain:** `https://pay.example.com/` (Document Root set to `public/`).
@@ -43,15 +43,15 @@ The following screenshots show the actual Installation Wizard flow:
 
 ### Database setup
 
-![UPI Gateway MySQL database setup](images/installation/database-setup.png)
+![AvinyaPay MySQL database setup](images/installation/database-setup.png)
 
 ### Successful migrations
 
-![UPI Gateway successful migrations](images/installation/migrations-success.png)
+![AvinyaPay successful migrations](images/installation/migrations-success.png)
 
 ### Create administrator
 
-![UPI Gateway administrator account setup](images/installation/admin-account.png)
+![AvinyaPay administrator account setup](images/installation/admin-account.png)
 
 ## After installation
 
@@ -64,7 +64,7 @@ For manual UPI accounts, a customer-submitted UTR places the order in **Review**
 ## Payment accounts and compliance
 
 - **Commercial UPI collections:** For business payment collections, merchants are strongly advised to configure registered merchant or current-account VPAs, or utilize official Payment Gateway integrations (PhonePe PG, Paytm PG). Personal savings-account UPI handles are intended for personal (P2P) transfers; utilizing personal accounts for commercial sales may violate bank terms of service, trigger automated velocity blocks, or result in account restrictions by the receiving bank.
-- **Account verification:** UPI Gateway routes payments and generates deep links based on merchant-supplied configuration. It does not independently verify VPA ownership, bank KYC, or legal account classification (Savings vs. Current). Merchants are solely responsible for ensuring their accounts comply with their banking partners' terms.
+- **Account verification:** AvinyaPay routes payments and generates deep links based on merchant-supplied configuration. It does not independently verify VPA ownership, bank KYC, or legal account classification (Savings vs. Current). Merchants are solely responsible for ensuring their accounts comply with their banking partners' terms.
 - **Account rotation and limits:** Account rotation distributes incoming orders across multiple active accounts for operational load balancing, high availability, and provider redundancy. Rotation must not be used to evade bank velocity limits, split commercial turnover to bypass regulatory thresholds, or circumvent financial institution restrictions.
 - **Explicit account selection:** If an API request explicitly provides `payment_account_id`, that exact account is validated (must be active, Live-compatible, and within its daily limit). If the requested account is disabled, unavailable, or over its limit, the request is rejected with a validation error; it is never silently routed to another account.
 
@@ -136,7 +136,7 @@ Follow this rotation checklist immediately:
      ```
 3. **Rotate Payment Gateway Credentials:**
    - In each payment provider console (Paytm PG, PhonePe PG), regenerate Merchant Keys, Salt Keys, and API secrets.
-   - Update the respective payment accounts in the UPI Gateway dashboard.
+   - Update the respective payment accounts in the AvinyaPay dashboard.
 4. **Rotate Webhook Secrets & Admin Credentials:**
    - Change your administrator password in the dashboard.
    - Regenerate merchant API secrets and webhook signing secrets.

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Artisan;
 
 // ── 1. Early Safety & PHP Version Checks ─────────────────────────────────────
 if (version_compare(PHP_VERSION, '8.2.0', '<')) {
-    error_log('[UPI Gateway installer] Server readiness check failed: unsupported PHP version '.PHP_VERSION);
+    error_log('[AvinyaPay installer] Server readiness check failed: unsupported PHP version '.PHP_VERSION);
     http_response_code(500);
     header('Content-Type: text/html; charset=utf-8');
     echo '<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Installation readiness</title></head><body style="font-family:sans-serif;padding:2rem;background:#f8fafc;color:#0f172a;text-align:center;">';
@@ -193,7 +193,7 @@ if (session_status() === PHP_SESSION_NONE) {
     $isHttps = installer_is_https($_SERVER);
 
     if (! NativeInstallerSession::start($baseDir, $installerBasePath, $isHttps)) {
-        error_log('[UPI Gateway installer] Native session could not be started with the configured or private application session storage.');
+        error_log('[AvinyaPay installer] Native session could not be started with the configured or private application session storage.');
         http_response_code(503);
         header('Content-Type: text/html; charset=utf-8');
         echo '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Setup unavailable</title></head><body><h1>Setup unavailable</h1><p>The installer could not start a secure session. Please verify the hosting account can write to the private storage/framework/sessions directory.</p></body></html>';
@@ -243,7 +243,7 @@ if ($alreadyInstalled && ! $showCompletion) {
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Installer Locked · UPI Gateway</title>
+        <title>Installer Locked · AvinyaPay</title>
         <style>
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 2rem; display: flex; align-items: center; justify-content: center; min-height: 80vh; }
             .card { background: #ffffff; max-width: 480px; width: 100%; padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; text-align: center; }
@@ -277,7 +277,7 @@ if (! file_exists($baseDir.'/vendor/autoload.php')) {
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Setup Error · UPI Gateway</title>
+        <title>Setup Error · AvinyaPay</title>
         <style>
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 2rem; display: flex; align-items: center; justify-content: center; min-height: 85vh; }
             .card { background: #ffffff; max-width: 600px; width: 100%; padding: 2.25rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; }
@@ -300,11 +300,11 @@ if (! file_exists($baseDir.'/vendor/autoload.php')) {
                 <strong>Common Causes &amp; Solutions:</strong>
                 <ul>
                     <li><strong>Incomplete Extraction:</strong> Ensure the ZIP package fully extracted and your hosting account has enough disk space and file inode quota.</li>
-                    <li><strong>Nested Extraction:</strong> If your hosting File Manager extracted files into a subfolder (e.g., <code>upi-gateway-main/</code>), move all files directly into the website directory.</li>
+                    <li><strong>Nested Extraction:</strong> If your hosting File Manager extracted files into a subfolder (e.g., <code>avinyapay-main/</code>), move all files directly into the website directory.</li>
                     <li><strong>Alternative Download:</strong> Both the GitHub <code>main.zip</code> and official Release ZIP include pre-bundled dependencies. If your download was truncated, re-download the verified production package below.</li>
                 </ul>
             </div>
-            <a href="https://github.com/mynkdev-21/upi-gateway/releases/download/latest-main/upi-gateway-production.zip" class="btn" target="_blank" rel="noopener">Download Ready-to-Install Package</a>
+            <a href="#" class="btn" target="_blank" rel="noopener">Download Ready-to-Install Package</a>
         </div>
     </body>
     </html>
@@ -330,7 +330,7 @@ try {
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Setup Unavailable · UPI Gateway</title>
+        <title>Setup Unavailable · AvinyaPay</title>
         <style>
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 2rem; display: flex; align-items: center; justify-content: center; min-height: 80vh; }
             .card { background: #ffffff; max-width: 480px; width: 100%; padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; text-align: center; }
@@ -410,7 +410,7 @@ if ($method === 'POST' && $step === 'deployment-check') {
         $rawMessage = (string) ($_POST['message'] ?? 'Unknown readiness failure');
         $sanitizedMessage = preg_replace('/(?:\x1b\[[0-9;]*[a-zA-Z]|[\x00-\x1f\x7f])/', ' ', $rawMessage);
         $sanitizedMessage = trim(preg_replace('/\s+/', ' ', (string) $sanitizedMessage));
-        error_log('[UPI Gateway installer] Browser readiness check failed: '.json_encode([
+        error_log('[AvinyaPay installer] Browser readiness check failed: '.json_encode([
             'stage' => $stage,
             'message' => mb_substr($sanitizedMessage, 0, 500),
             'url_prefix' => $installerBasePath,
@@ -504,7 +504,7 @@ if ($method === 'POST' && ! $error) {
         $dbDatabase = trim($_POST['db_database'] ?? '');
         $dbUsername = trim($_POST['db_username'] ?? '');
         $dbPassword = (string) ($_POST['db_password'] ?? '');
-        $appName = trim($_POST['app_name'] ?? 'UPI Gateway');
+        $appName = trim($_POST['app_name'] ?? 'AvinyaPay');
         $appUrl = rtrim(trim($_POST['app_url'] ?? ''), '/');
 
         // Validation
@@ -617,7 +617,7 @@ $allPassed = $overview['allPassed'];
 $diagnostics = $installer->detectEnvironmentDiagnostics(null, $serverState);
 $currentUrl = $diagnostics['detected_app_url'];
 if (! $allPassed) {
-    error_log('[UPI Gateway installer] Server readiness checks failed: '.json_encode([
+    error_log('[AvinyaPay installer] Server readiness checks failed: '.json_encode([
         'failed_checks' => array_values(array_map(
             static fn (array $check): string => $check['name'],
             array_filter($requirements, static fn (array $check): bool => ($check['required'] ?? true) && ! $check['pass'])
@@ -633,7 +633,7 @@ if (! $allPassed) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Install · UPI Gateway</title>
+    <title>Install · AvinyaPay</title>
     <style>
         * { box-sizing: border-box; }
         :root { color-scheme: light; }
@@ -714,7 +714,7 @@ if (! $allPassed) {
    <aside class="setup-sidebar">
     <div class="logo">
         <div class="logo-icon">&#x26A1;</div>
-        <div><div class="logo-title">UPI Gateway</div><div class="logo-subtitle">Installation wizard</div></div>
+        <div><div class="logo-title">AvinyaPay</div><div class="logo-subtitle">Installation wizard</div></div>
     </div>
 
     <div class="steps" aria-label="Installation progress">
@@ -780,7 +780,7 @@ if (! $allPassed) {
                 <input type="hidden" name="setup_token" value="<?= htmlspecialchars($_SESSION['_installer_setup_token'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                 <div class="form-group">
                     <label>Application Name</label>
-                    <input type="text" name="app_name" value="<?= htmlspecialchars($_POST['app_name'] ?? 'UPI Gateway', ENT_QUOTES, 'UTF-8') ?>" required>
+                    <input type="text" name="app_name" value="<?= htmlspecialchars($_POST['app_name'] ?? 'AvinyaPay', ENT_QUOTES, 'UTF-8') ?>" required>
                 </div>
                 <div class="form-group">
                     <label>Application URL</label>
