@@ -43,15 +43,15 @@ The following screenshots show the actual Installation Wizard flow:
 
 ### Database setup
 
-![AvinyaPay MySQL database setup](images/installation/database-setup.png)
+
 
 ### Successful migrations
 
-![AvinyaPay successful migrations](images/installation/migrations-success.png)
+
 
 ### Create administrator
 
-![AvinyaPay administrator account setup](images/installation/admin-account.png)
+
 
 ## After installation
 
