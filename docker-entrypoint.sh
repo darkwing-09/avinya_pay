@@ -13,4 +13,38 @@ mkdir -p /var/www/html/storage/framework/{sessions,views,cache} /var/www/html/st
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Ensure .env exists in container root
+if [ ! -f /var/www/html/.env ]; then
+    cp /var/www/html/.env.example /var/www/html/.env
+fi
+
+# Apply environment variables to .env file
+[ -n "$APP_KEY" ] && sed -i "s|^APP_KEY=.*|APP_KEY=$APP_KEY|" /var/www/html/.env
+[ -n "$APP_URL" ] && sed -i "s|^APP_URL=.*|APP_URL=$APP_URL|" /var/www/html/.env
+[ -n "$DB_HOST" ] && sed -i "s|^DB_HOST=.*|DB_HOST=$DB_HOST|" /var/www/html/.env
+[ -n "$DB_PORT" ] && sed -i "s|^DB_PORT=.*|DB_PORT=$DB_PORT|" /var/www/html/.env
+[ -n "$DB_DATABASE" ] && sed -i "s|^DB_DATABASE=.*|DB_DATABASE=$DB_DATABASE|" /var/www/html/.env
+[ -n "$DB_USERNAME" ] && sed -i "s|^DB_USERNAME=.*|DB_USERNAME=$DB_USERNAME|" /var/www/html/.env
+[ -n "$DB_PASSWORD" ] && sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=\"$DB_PASSWORD\"|" /var/www/html/.env
+
+# Always set SSL CA for MySQL cloud connections
+if grep -q "MYSQL_ATTR_SSL_CA" /var/www/html/.env; then
+    sed -i "s|^MYSQL_ATTR_SSL_CA=.*|MYSQL_ATTR_SSL_CA=/etc/ssl/certs/ca-certificates.crt|" /var/www/html/.env
+else
+    echo "MYSQL_ATTR_SSL_CA=/etc/ssl/certs/ca-certificates.crt" >> /var/www/html/.env
+fi
+
+# If APP_KEY is still empty, generate one
+if ! grep -q "^APP_KEY=base64:" /var/www/html/.env; then
+    php artisan key:generate --force || true
+fi
+
+# If remote DB_HOST is set, mark installation complete
+if [ -n "$DB_HOST" ] && [ "$DB_HOST" != "127.0.0.1" ]; then
+    touch /var/www/html/storage/installed
+fi
+
+chown www-data:www-data /var/www/html/.env /var/www/html/storage/installed 2>/dev/null || true
+chmod 664 /var/www/html/.env /var/www/html/storage/installed 2>/dev/null || true
+
 exec "$@"
