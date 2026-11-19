@@ -18,9 +18,18 @@ if [ ! -f /var/www/html/.env ]; then
     cp /var/www/html/.env.example /var/www/html/.env
 fi
 
+# Ensure APP_URL defaults to the public Render domain
+if [ -n "$RENDER_EXTERNAL_URL" ]; then
+    APP_URL="$RENDER_EXTERNAL_URL"
+fi
+if [ -z "$APP_URL" ] || [ "$APP_URL" = "https://your-domain.example" ]; then
+    APP_URL="https://avinyapay.onrender.com"
+fi
+
 # Apply environment variables to .env file
 [ -n "$APP_KEY" ] && sed -i "s|^APP_KEY=.*|APP_KEY=$APP_KEY|" /var/www/html/.env
-[ -n "$APP_URL" ] && sed -i "s|^APP_URL=.*|APP_URL=$APP_URL|" /var/www/html/.env
+sed -i "s|^APP_URL=.*|APP_URL=$APP_URL|" /var/www/html/.env
+sed -i "s|^ASSET_URL=.*|ASSET_URL=$APP_URL|" /var/www/html/.env
 [ -n "$DB_HOST" ] && sed -i "s|^DB_HOST=.*|DB_HOST=$DB_HOST|" /var/www/html/.env
 [ -n "$DB_PORT" ] && sed -i "s|^DB_PORT=.*|DB_PORT=$DB_PORT|" /var/www/html/.env
 [ -n "$DB_DATABASE" ] && sed -i "s|^DB_DATABASE=.*|DB_DATABASE=$DB_DATABASE|" /var/www/html/.env

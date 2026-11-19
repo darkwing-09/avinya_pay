@@ -35,6 +35,9 @@ class AppServiceProvider extends ServiceProvider
                 throw new RuntimeException('Production requires a MySQL database connection.');
             }
             $appUrl = (string) config('app.url');
+            if (empty($appUrl) || str_contains($appUrl, 'your-domain.example') || str_contains($appUrl, 'localhost')) {
+                $appUrl = request()->schemeAndHttpHost() ?: 'https://avinyapay.onrender.com';
+            }
             URL::useOrigin($appUrl);
             URL::useAssetOrigin(config('app.asset_url') ?: $appUrl);
 
