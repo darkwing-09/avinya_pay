@@ -77,6 +77,33 @@ Route::get('/__api_debug', function (Request $request) {
             $out['accounts_count'] = $accounts->count();
             $out['accounts'] = $accounts->toArray();
 
+            foreach ($accounts as $acc) {
+                try {
+                    $creds = $acc->credentials;
+                    $out['account_'.$acc->id.'_creds'] = 'Decrypted OK: ' . json_encode($creds);
+                } catch (\Throwable $ce) {
+                    $out['account_'.$acc->id.'_creds_error'] = [
+                        'message' => $ce->getMessage(),
+                        'class' => get_class($ce),
+                    ];
+                }
+            }
+
+            $latestOrder = \App\Models\Order::latest()->first();
+            if ($latestOrder) {
+                $out['latest_order_id'] = $latestOrder->order_no;
+                try {
+                    $checked = app(\App\Services\OrderService::class)->check($latestOrder);
+                    $out['latest_order_check'] = 'Checked status: ' . $checked->status;
+                } catch (\Throwable $chkErr) {
+                    $out['latest_order_check_error'] = [
+                        'message' => $chkErr->getMessage(),
+                        'class' => get_class($chkErr),
+                        'file' => $chkErr->getFile() . ':' . $chkErr->getLine(),
+                    ];
+                }
+            }
+
             // Try creating an order with OrderService
             try {
                 $orderService = app(\App\Services\OrderService::class);
