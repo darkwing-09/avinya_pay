@@ -20,6 +20,60 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
+// Diagnostic endpoint to debug database, migrations, and order creation on Render
+Route::get('/__api_debug', function (Request $request) {
+    $out = [];
+    try {
+        $out['db_connection'] = DB::connection()->getPdo() ? 'connected' : 'null';
+        $out['db_database'] = DB::connection()->getDatabaseName();
+        $tables = DB::select('SHOW TABLES');
+        $out['tables'] = array_map(fn($t) => array_values((array)$t)[0], $tables);
+        
+        $key = 'key_hHUvU2o3nzoU7b7V6M3vEIhR';
+        $user = \App\Models\User::where('api_key', $key)->first();
+        if (!$user) {
+            $out['user_lookup'] = 'User not found for key: ' . $key;
+            $out['all_users'] = \App\Models\User::all(['id', 'name', 'email', 'api_key', 'is_active'])->toArray();
+        } else {
+            $out['user'] = [
+                'id' => $user->id,
+                'email' => $user->email,
+                'is_active' => $user->is_active,
+                'api_key' => $user->api_key,
+                'api_secret_hash_len' => strlen((string)$user->api_secret),
+            ];
+            $accounts = $user->paymentAccounts()->get();
+            $out['accounts_count'] = $accounts->count();
+            $out['accounts'] = $accounts->toArray();
+
+            // Try creating an order with OrderService
+            try {
+                $orderService = app(\App\Services\OrderService::class);
+                $order = $orderService->create($user, [
+                    'amount' => 299.00,
+                    'client_order_id' => 'dbg_' . time(),
+                    'note' => 'Debug order',
+                ], \App\Models\Order::LIVE);
+                $out['order_test'] = 'SUCCESS: ' . $order->order_no;
+            } catch (\Throwable $oe) {
+                $out['order_test_error'] = [
+                    'message' => $oe->getMessage(),
+                    'class' => get_class($oe),
+                    'file' => $oe->getFile() . ':' . $oe->getLine(),
+                ];
+            }
+        }
+    } catch (\Throwable $e) {
+        $out['error'] = [
+            'message' => $e->getMessage(),
+            'class' => get_class($e),
+            'file' => $e->getFile() . ':' . $e->getLine(),
+            'trace' => explode("\n", $e->getTraceAsString()),
+        ];
+    }
+    return response()->json($out, 200, [], JSON_PRETTY_PRINT);
+});
+
 // Public diagnostic metadata only; POST proves a session-bound CSRF round trip.
 Route::get('/__upi_deployment_check', function (Request $request, InstallationManager $installer) {
     $probe = bin2hex(random_bytes(16));
