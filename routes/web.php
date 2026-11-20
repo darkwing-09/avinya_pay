@@ -40,7 +40,7 @@ Route::get('/__api_debug', function (Request $request) {
         ]);
         
         // Also update payment account 1 credentials with current encryption key
-        $creds = encrypt(['mid' => '281005050101cjehi3txn84r'], false);
+        $creds = encrypt(json_encode(['mid' => '281005050101cjehi3txn84r']), false);
         DB::table('payment_accounts')->where('id', 1)->update([
             'credentials' => $creds,
         ]);

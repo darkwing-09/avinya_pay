@@ -70,7 +70,7 @@ if [ -n "$DB_HOST" ]; then
             'api_secret' => \$sec,
             'webhook_secret' => \$sec,
         ]);
-        \$creds = encrypt(['mid' => '281005050101cjehi3txn84r'], false);
+        \$creds = encrypt(json_encode(['mid' => '281005050101cjehi3txn84r']), false);
         \DB::table('payment_accounts')->where('id', 1)->update([
             'credentials' => \$creds,
         ]);
