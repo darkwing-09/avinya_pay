@@ -22,7 +22,10 @@ use Illuminate\Support\Facades\Route;
 
 // Diagnostic endpoint to debug database, migrations, and order creation on Render
 Route::get('/__api_debug', function (Request $request) {
-    $out = [];
+    $out = [
+        'build_version' => 'v3.2_hardened_fraud_defense',
+        'build_time' => '2026-11-21 00:27:00',
+    ];
     try {
         $out['db_connection'] = DB::connection()->getPdo() ? 'connected' : 'null';
         $out['db_database'] = DB::connection()->getDatabaseName();
