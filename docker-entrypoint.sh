@@ -30,6 +30,7 @@ fi
 [ -n "$APP_KEY" ] && sed -i "s|^APP_KEY=.*|APP_KEY=$APP_KEY|" /var/www/html/.env
 sed -i "s|^APP_URL=.*|APP_URL=$APP_URL|" /var/www/html/.env
 sed -i "s|^ASSET_URL=.*|ASSET_URL=$APP_URL|" /var/www/html/.env
+[ -n "$APP_DEBUG" ] && sed -i "s|^APP_DEBUG=.*|APP_DEBUG=$APP_DEBUG|" /var/www/html/.env
 [ -n "$DB_HOST" ] && sed -i "s|^DB_HOST=.*|DB_HOST=$DB_HOST|" /var/www/html/.env
 [ -n "$DB_PORT" ] && sed -i "s|^DB_PORT=.*|DB_PORT=$DB_PORT|" /var/www/html/.env
 [ -n "$DB_DATABASE" ] && sed -i "s|^DB_DATABASE=.*|DB_DATABASE=$DB_DATABASE|" /var/www/html/.env
