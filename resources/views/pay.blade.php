@@ -24,9 +24,9 @@
     {{-- Ambient Top Glow (GoCrazy signature) --}}
     <div class="fixed top-0 inset-x-0 h-96 pointer-events-none -z-10" style="background: radial-gradient(55% 100% at 50% 0%, rgba(56, 189, 248, 0.15), transparent 70%);"></div>
 
-    {{-- Main Checkout Container --}}
+    {{-- Main Checkout Container with GoCrazy 3D Tilt & Spotlight Hover --}}
     <div class="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-        <div class="w-full max-w-3xl gocrazy-glass rounded-2xl overflow-hidden grid md:grid-cols-5 ring-1 ring-white/10 shadow-2xl">
+        <div data-tilt data-spot class="tilt spot w-full max-w-3xl gocrazy-glass rounded-2xl overflow-hidden grid md:grid-cols-5 ring-1 ring-white/10 shadow-2xl">
 
             {{-- Summary Sidebar (Left column) --}}
             <div class="md:col-span-2 relative bg-[#0a0a0f] text-[#fafafc] p-6 sm:p-8 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/10 overflow-hidden">

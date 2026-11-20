@@ -1,4 +1,17 @@
 import './bootstrap';
+import { initGoCrazyBackground } from './background';
+import { initGoCrazyHoverEffects } from './hover-effects';
+
+// Initialize GoCrazy Background & Hover effects on DOMContentLoaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        initGoCrazyBackground();
+        initGoCrazyHoverEffects();
+    });
+} else {
+    initGoCrazyBackground();
+    initGoCrazyHoverEffects();
+}
 
 /**
  * data-copy="<text>" — copies the text to the clipboard and briefly shows "Copied!".
