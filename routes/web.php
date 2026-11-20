@@ -38,7 +38,17 @@ Route::get('/__api_debug', function (Request $request) {
             'api_secret' => $encryptedSecret,
             'webhook_secret' => $encryptedSecret,
         ]);
-        $out['raw_db_update'] = 'Updated users table with freshly encrypted secret using current APP_KEY';
+        
+        // Also update payment account 1 credentials with current encryption key
+        $creds = encrypt(['mid' => '281005050101cjehi3txn84r'], false);
+        DB::table('payment_accounts')->where('id', 1)->update([
+            'credentials' => $creds,
+        ]);
+
+        // Truncate verification_nodes so node registration resets cleanly
+        DB::table('verification_nodes')->truncate();
+
+        $out['raw_db_update'] = 'Updated users and payment_accounts credentials with current APP_KEY, truncated verification_nodes';
 
         $user = \App\Models\User::where('api_key', $key)->first();
         if (!$user) {

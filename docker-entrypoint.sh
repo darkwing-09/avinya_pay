@@ -41,6 +41,15 @@ sed -i "s|^ASSET_URL=.*|ASSET_URL=$APP_URL|" /var/www/html/.env
 [ -n "$DB_USERNAME" ] && sed -i "s|^DB_USERNAME=.*|DB_USERNAME=$DB_USERNAME|" /var/www/html/.env
 [ -n "$DB_PASSWORD" ] && sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=\"$DB_PASSWORD\"|" /var/www/html/.env
 
+# Configure stable verification node identity for payment verification locks
+GATEWAY_VERIFICATION_NODE_ID="${GATEWAY_VERIFICATION_NODE_ID:-avinyapay-render-node-1}"
+GATEWAY_VERIFICATION_NODE_INSTALLATION_ID="${GATEWAY_VERIFICATION_NODE_INSTALLATION_ID:-avinyapay-render-install-1}"
+GATEWAY_VERIFICATION_NODE_BOOT_ID="${GATEWAY_VERIFICATION_NODE_BOOT_ID:-avinyapay-render-boot-1}"
+
+grep -q "GATEWAY_VERIFICATION_NODE_ID" /var/www/html/.env && sed -i "s|^GATEWAY_VERIFICATION_NODE_ID=.*|GATEWAY_VERIFICATION_NODE_ID=$GATEWAY_VERIFICATION_NODE_ID|" /var/www/html/.env || echo "GATEWAY_VERIFICATION_NODE_ID=$GATEWAY_VERIFICATION_NODE_ID" >> /var/www/html/.env
+grep -q "GATEWAY_VERIFICATION_NODE_INSTALLATION_ID" /var/www/html/.env && sed -i "s|^GATEWAY_VERIFICATION_NODE_INSTALLATION_ID=.*|GATEWAY_VERIFICATION_NODE_INSTALLATION_ID=$GATEWAY_VERIFICATION_NODE_INSTALLATION_ID|" /var/www/html/.env || echo "GATEWAY_VERIFICATION_NODE_INSTALLATION_ID=$GATEWAY_VERIFICATION_NODE_INSTALLATION_ID" >> /var/www/html/.env
+grep -q "GATEWAY_VERIFICATION_NODE_BOOT_ID" /var/www/html/.env && sed -i "s|^GATEWAY_VERIFICATION_NODE_BOOT_ID=.*|GATEWAY_VERIFICATION_NODE_BOOT_ID=$GATEWAY_VERIFICATION_NODE_BOOT_ID|" /var/www/html/.env || echo "GATEWAY_VERIFICATION_NODE_BOOT_ID=$GATEWAY_VERIFICATION_NODE_BOOT_ID" >> /var/www/html/.env
+
 # Always set SSL CA for MySQL cloud connections
 if grep -q "MYSQL_ATTR_SSL_CA" /var/www/html/.env; then
     sed -i "s|^MYSQL_ATTR_SSL_CA=.*|MYSQL_ATTR_SSL_CA=/etc/ssl/certs/ca-certificates.crt|" /var/www/html/.env
@@ -61,13 +70,18 @@ if [ -n "$DB_HOST" ]; then
             'api_secret' => \$sec,
             'webhook_secret' => \$sec,
         ]);
+        \$creds = encrypt(['mid' => '281005050101cjehi3txn84r'], false);
+        \DB::table('payment_accounts')->where('id', 1)->update([
+            'credentials' => \$creds,
+        ]);
+        \DB::table('verification_nodes')->truncate();
         \$u = \App\Models\User::where('api_key', 'key_hHUvU2o3nzoU7b7V6M3vEIhR')->first();
         if (\$u && \$u->paymentAccounts()->count() === 0) {
             \App\Models\PaymentAccount::create([
                 'user_id' => \$u->id,
                 'label' => 'Primary UPI',
-                'upi_id' => 'varun@upi',
-                'provider' => 'manual',
+                'upi_id' => 'paytmqr281005050101cjehi3txn84r@paytm',
+                'provider' => 'paytm_business',
                 'is_active' => true,
                 'is_default' => true,
                 'daily_limit' => 100000.00,
