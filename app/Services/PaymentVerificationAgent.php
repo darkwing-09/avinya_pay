@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
  * Intelligent Payment Verification Agent
  * Extracts Order ID, UTR, and Amount from incoming Gmail receipts,
  * push notifications, and SMS feeds, then auto-reconciles pending orders.
+ * Designed for high concurrency (1000+ simultaneous orders).
  */
 class PaymentVerificationAgent
 {
@@ -88,12 +89,14 @@ class PaymentVerificationAgent
 
     /**
      * Reconcile an ingested signal against pending/review orders.
+     * Orders are verified strictly by Order ID or matching UTR from official receipts.
+     * NEVER by amount alone, preventing collisions even with 1000+ concurrent checkouts.
      */
     public function matchSignal(PaymentSignal $signal): ?Order
     {
         $order = null;
 
-        // Strategy 1: Match by direct Order ID
+        // Primary: Match strictly by unique Order ID from the email / notification
         if ($signal->order_id) {
             $order = Order::where(function ($q) use ($signal) {
                 $q->where('order_no', $signal->order_id)
@@ -101,19 +104,10 @@ class PaymentVerificationAgent
             })->whereIn('status', [Order::PENDING, Order::REVIEW, Order::EXPIRED])->first();
         }
 
-        // Strategy 2: Match by customer-submitted UTR
+        // Secondary: Match by customer-submitted UTR if Order ID was not in the note
         if (! $order && $signal->utr) {
             $order = Order::where('customer_utr', $signal->utr)
                 ->whereIn('status', [Order::PENDING, Order::REVIEW, Order::EXPIRED])
-                ->first();
-        }
-
-        // Strategy 3: Match by exact amount for recently created pending orders (last 20 mins)
-        if (! $order && $signal->amount) {
-            $order = Order::where('status', Order::PENDING)
-                ->where('amount', $signal->amount)
-                ->where('created_at', '>=', now()->subMinutes(25))
-                ->latest('id')
                 ->first();
         }
 
@@ -125,7 +119,9 @@ class PaymentVerificationAgent
     }
 
     /**
-     * Verify customer-submitted 12-digit UTR from the checkout page.
+     * Customer submits 12-digit UTR after the 5-minute wait window.
+     * Checks if a verified signal is already in the ledger with this Order ID or UTR.
+     * If found, marks PAID immediately; otherwise records customer_utr and waits for the email signal.
      */
     public function verifyCustomerUtr(Order $order, string $utr): Order
     {
@@ -134,49 +130,58 @@ class PaymentVerificationAgent
         return DB::transaction(function () use ($order, $utr) {
             $locked = Order::whereKey($order->id)->lockForUpdate()->firstOrFail();
 
-            // Check if there is an unmatched signal with this UTR
-            $signal = PaymentSignal::where('utr', $utr)
-                ->where('status', 'unmatched')
-                ->latest('id')
-                ->first();
-
-            $verifiedBy = $signal ? 'agent_' . $signal->source : 'agent_utr_verified';
-
-            $locked->update([
-                'status' => Order::PAID,
-                'utr' => $utr,
-                'customer_utr' => $utr,
-                'paid_at' => now(),
-                'verified_by' => $verifiedBy,
-            ]);
+            // Look for existing verified signals with this Order ID or UTR
+            $signal = PaymentSignal::where(function ($q) use ($locked, $utr) {
+                $q->where('order_id', $locked->order_no)
+                  ->orWhere('order_id', $locked->client_order_id)
+                  ->orWhere('utr', $utr);
+            })->latest('id')->first();
 
             if ($signal) {
+                // Signal confirmed by Gmail/notification!
+                $locked->update([
+                    'status' => Order::PAID,
+                    'utr' => $utr,
+                    'customer_utr' => $utr,
+                    'paid_at' => now(),
+                    'verified_by' => 'agent_' . $signal->source,
+                ]);
+
                 $signal->update([
                     'status' => 'matched',
                     'matched_order_id' => $locked->id,
                 ]);
+
+                Log::info("Order {$locked->order_no} verified and marked PAID via matched signal #{$signal->id}");
+                app(WebhookOutboxService::class)->record($locked->refresh(), 'order.paid');
+            } else {
+                // Keep record of UTR; will be confirmed automatically the second the Gmail signal arrives
+                $locked->update([
+                    'status' => Order::REVIEW,
+                    'customer_utr' => $utr,
+                    'utr_submitted_at' => now(),
+                    'utr_attempts' => DB::raw('utr_attempts + 1'),
+                ]);
+                Log::info("Order {$locked->order_no} recorded customer UTR {$utr}; awaiting incoming Order ID from Gmail/notification");
             }
-
-            Log::info("Order {$locked->order_no} verified and marked PAID via {$verifiedBy}", [
-                'utr' => $utr,
-                'amount' => $locked->amount,
-            ]);
-
-            app(WebhookOutboxService::class)->record($locked->refresh(), 'order.paid');
 
             return $locked->refresh();
         });
     }
 
     /**
-     * Mark an order as paid from a matched signal.
+     * Mark an order as paid from a verified signal.
      */
     private function confirmPayment(Order $order, PaymentSignal $signal): Order
     {
         return DB::transaction(function () use ($order, $signal) {
             $locked = Order::whereKey($order->id)->lockForUpdate()->firstOrFail();
 
-            $utr = $signal->utr ?: ($locked->customer_utr ?: 'AGENT_' . $signal->id);
+            if ($locked->status === Order::PAID) {
+                return $locked;
+            }
+
+            $utr = $signal->utr ?: ($locked->customer_utr ?: 'SIGNAL_' . $signal->id);
 
             $locked->update([
                 'status' => Order::PAID,
@@ -191,7 +196,7 @@ class PaymentVerificationAgent
                 'matched_order_id' => $locked->id,
             ]);
 
-            Log::info("Order {$locked->order_no} marked PAID from signal #{$signal->id} ({$signal->source})");
+            Log::info("Order {$locked->order_no} marked PAID from signal #{$signal->id} ({$signal->source}) with Order ID {$signal->order_id}");
 
             app(WebhookOutboxService::class)->record($locked->refresh(), 'order.paid');
 

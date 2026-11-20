@@ -176,11 +176,6 @@
                         <x-copy :text="$order->paymentAccount->upi_id" />
                     </div>
 
-                    {{-- Optional Manual UTR form --}}
-                    @if ($order->acceptsCustomerUtr())
-                        @include('pay._utr-form', ['class' => 'mt-4'])
-                    @endif
-
                     {{-- Live Polling Status Indicator --}}
                     <div class="mt-5 pt-4 border-t border-white/10">
                         <div class="flex items-center justify-center gap-2.5 rounded-xl bg-[#17171f] border border-white/10 px-4 py-2.5 text-xs text-slate-300">
@@ -188,10 +183,25 @@
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#38bdf8] opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2 w-2 bg-[#38bdf8]"></span>
                             </span>
-                            <span id="status-text">{{ $order->acceptsCustomerUtr() ? 'After paying, enter your 12-digit UTR below' : 'Awaiting payment confirmation…' }}</span>
+                            <span id="status-text">Awaiting automatic confirmation from Paytm / Bank…</span>
                         </div>
-                        <p class="mt-2 text-center text-[11px] text-slate-500">Do not refresh or close while paying.</p>
+                        <p class="mt-2 text-center text-[11px] text-slate-500">Asynchronously verifies Order ID in real-time. Do not close.</p>
                     </div>
+
+                    {{-- 5-Minute Delayed UTR Form --}}
+                    @if ($order->acceptsCustomerUtr())
+                        <div id="utr-section" @class(['mt-4', 'hidden' => !$order->customer_utr && $order->created_at->diffInSeconds(now()) < 300])>
+                            @include('pay._utr-form')
+                        </div>
+                        @if (!$order->customer_utr && $order->created_at->diffInSeconds(now()) < 300)
+                            <div id="utr-countdown-notice" class="mt-3 text-center">
+                                <p class="text-[11px] text-slate-500">
+                                    Checking Order ID in bank signals... 
+                                    <span id="utr-timer-wrap">Manual UTR unlocks in <span id="utr-timer" class="font-mono text-[#38bdf8]">5:00</span></span>
+                                </p>
+                            </div>
+                        @endif
+                    @endif
                 @endif
             </div>
         </div>
@@ -213,24 +223,43 @@
     const recoveryEndsAt = {{ $order->expires_at?->copy()->addHours((int) config('gateway.late_payment_grace_hours', 24))->getTimestampMs() ?? 0 }};
     const pollDelay = initialStatus === 'expired' ? 30000 : 4000;
     const expiresAt = {{ ($order->expires_at ?? now()->addMinutes(config('gateway.order_expiry_minutes', 15)))->getTimestampMs() }};
+    const createdAt = {{ $order->created_at->getTimestampMs() }};
+    const utrUnlockAt = createdAt + 300000;
     const total = {{ $totalSeconds }};
     const timer = document.getElementById('timer');
     const ring = document.getElementById('ring');
     const statusUrl = @json(route('pay.status', $order));
 
+    const utrSection = document.getElementById('utr-section');
+    const utrNotice = document.getElementById('utr-countdown-notice');
+    const utrTimer = document.getElementById('utr-timer');
+
     const tick = () => {
-        if (!timer) return;
-        const left = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
-        const display = String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0');
-        const offset = (100.5 * (1 - left / total)).toFixed(2);
-        const stroke = left < 60 ? '#f87171' : '#38bdf8';
-        timer.textContent = display;
-        ring.style.strokeDashoffset = offset;
-        ring.style.stroke = stroke;
-        const timerPg = document.getElementById('timer-pg');
-        const ringPg  = document.getElementById('ring-pg');
-        if (timerPg) timerPg.textContent = display;
-        if (ringPg)  { ringPg.style.strokeDashoffset = offset; ringPg.style.stroke = stroke; }
+        if (timer) {
+            const left = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+            const display = String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0');
+            const offset = (100.5 * (1 - left / total)).toFixed(2);
+            const stroke = left < 60 ? '#f87171' : '#38bdf8';
+            timer.textContent = display;
+            ring.style.strokeDashoffset = offset;
+            ring.style.stroke = stroke;
+            const timerPg = document.getElementById('timer-pg');
+            const ringPg  = document.getElementById('ring-pg');
+            if (timerPg) timerPg.textContent = display;
+            if (ringPg)  { ringPg.style.strokeDashoffset = offset; ringPg.style.stroke = stroke; }
+        }
+
+        if (utrTimer && utrSection) {
+            const remainingUtr = Math.max(0, Math.ceil((utrUnlockAt - Date.now()) / 1000));
+            if (remainingUtr <= 0) {
+                utrSection.classList.remove('hidden');
+                if (utrNotice) utrNotice.classList.add('hidden');
+            } else {
+                const m = Math.floor(remainingUtr / 60);
+                const s = String(remainingUtr % 60).padStart(2, '0');
+                utrTimer.textContent = `${m}:${s}`;
+            }
+        }
     };
     tick();
     setInterval(tick, 1000);
