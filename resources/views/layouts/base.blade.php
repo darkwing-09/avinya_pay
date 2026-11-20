@@ -12,7 +12,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 </head>
-<body class="h-full bg-[#07070a] text-[#fafafc] antialiased selection:bg-[#38bdf8]/20 selection:text-white relative">
+<body class="h-full text-[#fafafc] antialiased selection:bg-[#38bdf8]/20 selection:text-white relative" style="background: transparent;">
     {{-- GoCrazy 3D Neon Tube & Ambient Background across all pages --}}
     <x-background />
 
