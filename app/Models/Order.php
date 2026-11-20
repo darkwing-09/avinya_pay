@@ -107,7 +107,6 @@ class Order extends Model
     public function acceptsCustomerUtr(): bool
     {
         return $this->environment === self::LIVE
-            && $this->paymentAccount?->provider === 'manual'
             && $this->utr_attempts < self::MAX_UTR_ATTEMPTS
             && ($this->status === self::PENDING
                 || ($this->status === self::EXPIRED && $this->expires_at?->gt(now()->subMinutes(self::UTR_GRACE_MINUTES))));

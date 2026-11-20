@@ -44,7 +44,8 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Customer submits the UTR after paying to a manual-verification UPI ID.
+     * Customer submits the 12-digit UTR after paying to UPI QR.
+     * Verified by PaymentVerificationAgent instantly.
      */
     public function submitUtr(Request $request, Order $order)
     {
@@ -53,7 +54,7 @@ class CheckoutController extends Controller
             'utr' => ['required', 'string', 'regex:/^\s*\d{12}\s*$/'],
         ], ['utr.regex' => 'UTR must be the 12-digit number shown in your UPI app after payment.']);
 
-        $this->orders->submitCustomerUtr($order->load('paymentAccount'), $data['utr']);
+        app(\App\Services\PaymentVerificationAgent::class)->verifyCustomerUtr($order, $data['utr']);
 
         return redirect()->route('pay.show', $order);
     }
