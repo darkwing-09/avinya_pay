@@ -121,7 +121,7 @@ class PaymentVerificationAgent
     /**
      * Customer submits 12-digit UTR after the 5-minute wait window.
      * Checks if a verified signal is already in the ledger with this Order ID or UTR.
-     * If found, marks PAID immediately; otherwise records customer_utr and waits for the email signal.
+     * Prevents UTR replay / double-spending fraud and underpayment fraud.
      */
     public function verifyCustomerUtr(Order $order, string $utr): Order
     {
@@ -130,21 +130,52 @@ class PaymentVerificationAgent
         return DB::transaction(function () use ($order, $utr) {
             $locked = Order::whereKey($order->id)->lockForUpdate()->firstOrFail();
 
-            // Look for existing verified signals with this Order ID or UTR
+            // Defense 1: Prevent UTR Replay Fraud (Double Spending)
+            $alreadyUsed = Order::where('utr', $utr)
+                ->where('id', '!=', $locked->id)
+                ->where('status', Order::PAID)
+                ->exists();
+
+            if ($alreadyUsed) {
+                Log::warning("FRAUD BLOCKED: Customer attempted to reuse already spent UTR {$utr} on order {$locked->order_no}");
+                $locked->update([
+                    'review_note' => 'This UTR has already been claimed on another completed order.',
+                    'utr_attempts' => DB::raw('utr_attempts + 1'),
+                ]);
+                return $locked->refresh();
+            }
+
+            // Defense 2: Look for authentic UNMATCHED verified signals with this Order ID or UTR
             $signal = PaymentSignal::where(function ($q) use ($locked, $utr) {
                 $q->where('order_id', $locked->order_no)
                   ->orWhere('order_id', $locked->client_order_id)
                   ->orWhere('utr', $utr);
-            })->latest('id')->first();
+            })->where('status', 'unmatched')
+              ->whereNull('matched_order_id')
+              ->latest('id')
+              ->first();
 
             if ($signal) {
-                // Signal confirmed by Gmail/notification!
+                // Defense 3: Underpayment Check
+                if ($signal->amount !== null && round((float) $signal->amount, 2) < round((float) $locked->amount, 2)) {
+                    Log::warning("FRAUD BLOCKED: Underpayment on UTR submit for {$locked->order_no}. Expected: {$locked->amount}, got {$signal->amount}");
+                    $locked->update([
+                        'status' => Order::REVIEW,
+                        'customer_utr' => $utr,
+                        'review_note' => "Partial payment received (₹{$signal->amount} of ₹{$locked->amount}). Full payment required.",
+                    ]);
+                    $signal->update(['status' => 'ignored', 'matched_order_id' => $locked->id]);
+                    return $locked->refresh();
+                }
+
+                // Verified authentic signal matches!
                 $locked->update([
                     'status' => Order::PAID,
                     'utr' => $utr,
                     'customer_utr' => $utr,
                     'paid_at' => now(),
                     'verified_by' => 'agent_' . $signal->source,
+                    'review_note' => null,
                 ]);
 
                 $signal->update([
@@ -155,14 +186,15 @@ class PaymentVerificationAgent
                 Log::info("Order {$locked->order_no} verified and marked PAID via matched signal #{$signal->id}");
                 app(WebhookOutboxService::class)->record($locked->refresh(), 'order.paid');
             } else {
-                // Keep record of UTR; will be confirmed automatically the second the Gmail signal arrives
+                // Defense 4: No matching bank signal yet -> strictly hold in REVIEW (NEVER mark PAID!)
                 $locked->update([
                     'status' => Order::REVIEW,
                     'customer_utr' => $utr,
                     'utr_submitted_at' => now(),
                     'utr_attempts' => DB::raw('utr_attempts + 1'),
+                    'review_note' => null,
                 ]);
-                Log::info("Order {$locked->order_no} recorded customer UTR {$utr}; awaiting incoming Order ID from Gmail/notification");
+                Log::info("Order {$locked->order_no} recorded customer UTR {$utr}; awaiting authentic signal from Paytm/Bank");
             }
 
             return $locked->refresh();
@@ -171,6 +203,7 @@ class PaymentVerificationAgent
 
     /**
      * Mark an order as paid from a verified signal.
+     * Enforces strict amount matching (blocks partial payment attacks).
      */
     private function confirmPayment(Order $order, PaymentSignal $signal): Order
     {
@@ -181,7 +214,35 @@ class PaymentVerificationAgent
                 return $locked;
             }
 
+            // Defense: Prevent Underpayment Fraud
+            if ($signal->amount !== null) {
+                $signalAmt = round((float) $signal->amount, 2);
+                $orderAmt = round((float) $locked->amount, 2);
+                if ($signalAmt < $orderAmt) {
+                    Log::warning("FRAUD BLOCKED: Underpayment detected for {$locked->order_no}. Order expects ₹{$orderAmt}, but signal was ₹{$signalAmt}");
+                    $signal->update([
+                        'status' => 'ignored',
+                        'matched_order_id' => $locked->id,
+                    ]);
+                    $locked->update([
+                        'status' => Order::REVIEW,
+                        'review_note' => "Partial payment received (₹{$signalAmt} of ₹{$orderAmt}). Full payment required.",
+                    ]);
+                    return $locked->refresh();
+                }
+            }
+
             $utr = $signal->utr ?: ($locked->customer_utr ?: 'SIGNAL_' . $signal->id);
+
+            // Defense: Check if this UTR was already used on another order
+            if ($signal->utr) {
+                $duplicate = Order::where('utr', $signal->utr)->where('id', '!=', $locked->id)->where('status', Order::PAID)->exists();
+                if ($duplicate) {
+                    Log::warning("FRAUD BLOCKED: Duplicate UTR {$signal->utr} detected in signal #{$signal->id} for order {$locked->order_no}");
+                    $signal->update(['status' => 'ignored', 'matched_order_id' => $locked->id]);
+                    return $locked->refresh();
+                }
+            }
 
             $locked->update([
                 'status' => Order::PAID,
@@ -189,6 +250,7 @@ class PaymentVerificationAgent
                 'utr' => $utr,
                 'customer_utr' => $signal->utr ?: $locked->customer_utr,
                 'verified_by' => 'agent_' . $signal->source,
+                'review_note' => null,
             ]);
 
             $signal->update([

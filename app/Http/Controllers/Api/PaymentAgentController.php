@@ -18,6 +18,16 @@ class PaymentAgentController extends Controller
      */
     public function ingest(Request $request): JsonResponse
     {
+        // Security: Optional secret header/parameter to prevent arbitrary public signal spoofing
+        $agentSecret = env('AGENT_WEBHOOK_SECRET', 'sec_arIFgtqDF92CnF2uV8IZYk4ZQHfg0LsfyIRxddhD');
+        $incomingSecret = $request->header('X-Agent-Secret') ?? $request->input('secret') ?? $request->bearerToken();
+        
+        if (config('app.env') === 'production' && env('REQUIRE_AGENT_SECRET', false)) {
+            if (! $incomingSecret || ! hash_equals($agentSecret, (string) $incomingSecret)) {
+                return response()->json(['ok' => false, 'error' => 'Unauthorized agent signal'], 401);
+            }
+        }
+
         $data = $request->validate([
             'raw_text' => ['nullable', 'string'],
             'text' => ['nullable', 'string'],
