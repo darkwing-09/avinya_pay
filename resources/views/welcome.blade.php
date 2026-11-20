@@ -7,9 +7,9 @@
 
     {{-- Hero --}}
     <section class="relative overflow-hidden bg-transparent">
-        <div class="absolute inset-0 -z-0" style="background: radial-gradient(900px circle at 80% -10%, rgb(99 102 241 / .13), transparent 55%), radial-gradient(600px circle at 5% 100%, rgb(14 165 233 / .09), transparent 55%);"></div>
-        <div class="absolute top-16 right-0 w-80 h-80 bg-brand-100/30 rounded-full blur-3xl -z-0 pointer-events-none"></div>
-        <div class="absolute bottom-0 left-0 w-64 h-64 bg-sky-100/30 rounded-full blur-3xl -z-0 pointer-events-none"></div>
+        <div class="absolute inset-0 -z-0" style="background: transparent;"></div>
+        <div class="absolute top-16 right-0 w-80 h-80 hidden -z-0 pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 hidden -z-0 pointer-events-none"></div>
         <div class="relative mx-auto max-w-6xl px-4 sm:px-6 pt-16 pb-20 lg:pt-24 lg:pb-28 grid lg:grid-cols-2 gap-16 items-center">
             <div>
                 @if (config('auth.allow_registration', false))
@@ -45,7 +45,7 @@
             <div class="relative mx-auto w-full max-w-md">
                 <div class="absolute -inset-4 bg-gradient-to-tr from-brand-200/50 to-sky-200/40 blur-2xl rounded-[2rem]"></div>
                 <div class="relative bg-[#07070a] rounded-2xl shadow-pop ring-1 ring-white/10 overflow-hidden">
-                    <div class="bg-slate-950 text-white px-6 py-5 flex items-center justify-between">
+                    <div class="bg-[#101016]/80 backdrop-blur-md text-white px-6 py-5 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <x-avatar name="Sharma Electronics" class="!bg-[#07070a]/10 !text-white" />
                             <div><div class="text-xs text-slate-400">Paying to</div><div class="font-semibold text-sm">Sharma Electronics</div></div>
@@ -89,7 +89,7 @@
     </section>
 
     {{-- Stats --}}
-    <section class="border-y border-white/10 bg-[#101016]/80 backdrop-blur-md py-12">
+    <section class="border-y border-white/10 bg-transparent backdrop-blur-md py-12">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
                 @foreach ([
@@ -130,7 +130,7 @@
     </section>
 
     {{-- Features --}}
-    <section id="features" class="bg-[#101016] border-y border-white/10 py-20 lg:py-28">
+    <section id="features" class="bg-transparent border-y border-white/10 py-20 lg:py-28">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
             <div class="max-w-2xl">
                 <div class="text-sm font-semibold text-brand-600">Everything you need</div>
@@ -255,7 +255,7 @@
                     @endforeach
                 </ol>
             </div>
-            <div class="rounded-2xl bg-slate-950 shadow-pop ring-1 ring-slate-800 overflow-hidden">
+            <div class="rounded-2xl bg-[#101016]/80 backdrop-blur-md shadow-pop ring-1 ring-slate-800 overflow-hidden">
                 <div class="flex items-center gap-2 px-4 py-3 border-b border-slate-800">
                     <span class="w-3 h-3 rounded-full bg-slate-700"></span><span class="w-3 h-3 rounded-full bg-slate-700"></span><span class="w-3 h-3 rounded-full bg-slate-700"></span>
                     <span class="ml-3 text-xs text-slate-400 font-mono">create-order.sh</span>
@@ -277,7 +277,7 @@
     </section>
 
     {{-- Pricing --}}
-    <section id="pricing" class="bg-[#101016] border-y border-white/10 py-20 lg:py-28">
+    <section id="pricing" class="bg-transparent border-y border-white/10 py-20 lg:py-28">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 text-center">
             <div class="text-sm font-semibold text-brand-600">Pricing</div>
             <h2 class="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-white">Simple and transparent</h2>
@@ -401,8 +401,8 @@
 
     {{-- CTA --}}
     <section class="px-4 sm:px-6 py-20">
-        <div class="relative mx-auto max-w-6xl overflow-hidden rounded-3xl bg-slate-950 px-6 py-16 sm:px-16 text-center">
-            <div class="absolute inset-0" style="background: radial-gradient(700px circle at 50% -20%, rgb(79 70 229 / .7), transparent 55%), radial-gradient(400px circle at 80% 120%, rgb(14 165 233 / .4), transparent 55%);"></div>
+        <div class="relative mx-auto max-w-6xl overflow-hidden rounded-3xl bg-[#101016]/80 backdrop-blur-md px-6 py-16 sm:px-16 text-center">
+            <div class="absolute inset-0" style="background: transparent;"></div>
             <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.03\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
             <div class="relative">
                 <span class="inline-flex items-center gap-2 rounded-full bg-[#07070a]/10 px-3 py-1 text-xs font-semibold text-white/80 ring-1 ring-white/20 mb-6">
@@ -430,7 +430,7 @@
         </div>
     </div>
 
-    <footer class="bg-slate-950 text-slate-400">
+    <footer class="bg-[#101016]/80 backdrop-blur-md text-slate-400">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 py-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
             <div class="lg:col-span-2">
                 <x-logo dark />

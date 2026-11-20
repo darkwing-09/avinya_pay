@@ -1,5 +1,5 @@
 /**
- * GoCrazy 3D Neon Tube Background with Cursor Follow & Lissajous Idle
+ * GoCrazy Fullscreen 3D Neon Tube Background with Cursor Follow & Lissajous Idle
  * Powered by threejs-components (tubes1)
  */
 import TubesCursor from 'threejs-components/build/cursors/tubes1.min.js';
@@ -27,9 +27,10 @@ function followFactor(delta, lag) {
   return dt / (lag + dt);
 }
 
-function idleRadii(width) {
-  const rx = Math.min(width * 0.34, 520);
-  return { rx, ry: rx * 0.42 };
+function idleRadii(width, height) {
+  const rx = Math.min(width * 0.45, 650);
+  const ry = Math.min(height * 0.35, 380);
+  return { rx, ry };
 }
 
 function hasWebGL() {
@@ -52,17 +53,20 @@ export function initGoCrazyBackground() {
 
   const coarse = window.matchMedia('(pointer: coarse)').matches;
   let paletteIdx = 0;
-  let following = false;
   const p = PALETTES[paletteIdx];
-  const { rx, ry } = idleRadii(window.innerWidth);
+  const { rx, ry } = idleRadii(window.innerWidth, window.innerHeight);
 
   try {
+    // Canvas fills entire window
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
     const app = TubesCursor(canvas, {
-      bloom: { threshold: 0, strength: 1.1, radius: 0.5 },
+      bloom: { threshold: 0, strength: 1.25, radius: 0.6 },
       tubes: {
-        count: coarse ? 10 : 16,
+        count: coarse ? 12 : 18,
         colors: p.tubes,
-        lights: { intensity: 180, colors: p.lights },
+        lights: { intensity: 220, colors: p.lights },
         minTubularSegments: (coarse ? SEGMENTS_TOUCH : SEGMENTS).min,
         maxTubularSegments: (coarse ? SEGMENTS_TOUCH : SEGMENTS).max,
         lerp: followFactor(1 / 60, LAG_IDLE),
@@ -73,8 +77,11 @@ export function initGoCrazyBackground() {
       sleepTimeScale2: IDLE_SPEED_Y,
     });
 
+    let following = false;
     let lag = LAG_IDLE;
     const render = app.three.onBeforeRender;
+
+    // Custom render loop: keeps tubes following cursor across full window
     app.three.onBeforeRender = (time) => {
       const target = following ? LAG_FOLLOW : LAG_IDLE;
       lag += (target - lag) * Math.min(1, time.delta * 2.5);
@@ -86,27 +93,30 @@ export function initGoCrazyBackground() {
     app.three.maxPixelRatio = Math.min(1.5, window.devicePixelRatio || 1);
     app.three.resize();
 
-    // Show canvas with smooth opacity
-    canvas.style.opacity = '0.85';
+    // Ensure opacity is visible
+    canvas.style.opacity = '0.9';
 
-    // Track mouse movement
+    // Track mouse everywhere on the viewport
     const onMove = (e) => {
       if (e.pointerType === 'touch') return;
       following = true;
     };
-    const idle = () => { following = false; };
+    const onLeave = () => {
+      following = false;
+    };
     const onResize = () => {
-      const { rx, ry } = idleRadii(window.innerWidth);
+      const { rx, ry } = idleRadii(window.innerWidth, window.innerHeight);
       app.options.sleepRadiusX = rx;
       app.options.sleepRadiusY = ry;
+      app.three.resize();
     };
 
-    document.addEventListener('pointermove', onMove, { passive: true });
-    document.documentElement.addEventListener('pointerleave', idle);
-    window.addEventListener('blur', idle);
+    window.addEventListener('pointermove', onMove, { passive: true });
+    document.documentElement.addEventListener('pointerleave', onLeave);
+    window.addEventListener('blur', onLeave);
     window.addEventListener('resize', onResize);
 
-    // Click on empty ground switches palette
+    // Click anywhere on non-interactive ground cycles palette
     document.addEventListener('click', (e) => {
       if (isInteractive(e.target)) return;
       paletteIdx = (paletteIdx + 1) % PALETTES.length;
