@@ -14,3 +14,5 @@
 *.zip
 .DS_Store
 Thumbs.db
+scripts/.processed_emails.json
+scripts/__pycache__/
