@@ -114,6 +114,10 @@ Route::get('/__api_debug', function (Request $request) {
                 }
             }
 
+            $out['recent_orders'] = \App\Models\Order::latest()->take(10)->get([
+                'id', 'order_no', 'client_order_id', 'amount', 'status', 'utr', 'submitted_utr', 'created_at', 'paid_at'
+            ])->toArray();
+
             // Try creating an order with OrderService
             try {
                 $orderService = app(\App\Services\OrderService::class);
