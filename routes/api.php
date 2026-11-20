@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
     Route::post('agent/webhook-signal', [PaymentAgentController::class, 'ingest'])
         ->middleware('throttle:60,1');
+    Route::post('agent/webhook_signal', [PaymentAgentController::class, 'ingest'])
+        ->middleware('throttle:60,1');
 });
 
 // Authenticated API routes with API Key
