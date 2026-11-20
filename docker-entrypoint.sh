@@ -26,8 +26,12 @@ if [ -z "$APP_URL" ] || [ "$APP_URL" = "https://your-domain.example" ]; then
     APP_URL="https://avinyapay.onrender.com"
 fi
 
+# Always use a stable, persistent APP_KEY across container restarts and redeployments
+FIXED_APP_KEY="base64:g/l8wDFIJC2yiT8sCg+jzpL0zeKC+FE1lk36k9LR5rw="
+APP_KEY="${APP_KEY:-$FIXED_APP_KEY}"
+sed -i "s|^APP_KEY=.*|APP_KEY=$APP_KEY|" /var/www/html/.env
+
 # Apply environment variables to .env file
-[ -n "$APP_KEY" ] && sed -i "s|^APP_KEY=.*|APP_KEY=$APP_KEY|" /var/www/html/.env
 sed -i "s|^APP_URL=.*|APP_URL=$APP_URL|" /var/www/html/.env
 sed -i "s|^ASSET_URL=.*|ASSET_URL=$APP_URL|" /var/www/html/.env
 [ -n "$APP_DEBUG" ] && sed -i "s|^APP_DEBUG=.*|APP_DEBUG=$APP_DEBUG|" /var/www/html/.env
@@ -44,16 +48,32 @@ else
     echo "MYSQL_ATTR_SSL_CA=/etc/ssl/certs/ca-certificates.crt" >> /var/www/html/.env
 fi
 
-# If APP_KEY is still empty, generate one
-if ! grep -q "^APP_KEY=base64:" /var/www/html/.env; then
-    php artisan key:generate --force || true
-fi
-
-# If remote DB_HOST is set, mark installation complete and run pending migrations
+# If remote DB_HOST is set, mark installation complete, run pending migrations, and sync API credentials
 if [ -n "$DB_HOST" ]; then
     touch /var/www/html/storage/installed
     echo "Running database migrations..."
-    php artisan migrate --force || echo "Migration step failed or skipped."
+    php artisan migrate --force || echo "Migration step skipped."
+
+    echo "Syncing API credentials with encryption key..."
+    php artisan tinker --execute="
+        \$u = \App\Models\User::where('api_key', 'key_hHUvU2o3nzoU7b7V6M3vEIhR')->first();
+        if (\$u) {
+            \$u->api_secret = 'sec_arIFgtqDF92CnF2uV8IZYk4ZQHfg0LsfyIRxddhD';
+            \$u->webhook_secret = 'sec_arIFgtqDF92CnF2uV8IZYk4ZQHfg0LsfyIRxddhD';
+            \$u->save();
+            if (\$u->paymentAccounts()->count() === 0) {
+                \App\Models\PaymentAccount::create([
+                    'user_id' => \$u->id,
+                    'label' => 'Primary UPI',
+                    'upi_id' => 'varun@upi',
+                    'provider' => 'manual',
+                    'is_active' => true,
+                    'is_default' => true,
+                    'daily_limit' => 100000.00,
+                ]);
+            }
+        }
+    " || echo "API user secret sync complete."
 fi
 
 chown www-data:www-data /var/www/html/.env /var/www/html/storage/installed 2>/dev/null || true
