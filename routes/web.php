@@ -30,20 +30,27 @@ Route::get('/__api_debug', function (Request $request) {
         $out['tables'] = array_map(fn($t) => array_values((array)$t)[0], $tables);
         
         $key = 'key_hHUvU2o3nzoU7b7V6M3vEIhR';
+        
+        // Directly update raw database column with newly encrypted secret to avoid Eloquent isDirty() decryption check
+        $cleanSecret = 'sec_arIFgtqDF92CnF2uV8IZYk4ZQHfg0LsfyIRxddhD';
+        $encryptedSecret = encrypt($cleanSecret);
+        DB::table('users')->where('api_key', $key)->update([
+            'api_secret' => $encryptedSecret,
+            'webhook_secret' => $encryptedSecret,
+        ]);
+        $out['raw_db_update'] = 'Updated users table with freshly encrypted secret using current APP_KEY';
+
         $user = \App\Models\User::where('api_key', $key)->first();
         if (!$user) {
             $out['user_lookup'] = 'User not found for key: ' . $key;
             $out['all_users'] = \App\Models\User::all(['id', 'name', 'email', 'api_key', 'is_active'])->toArray();
         } else {
-            // Repair encryption on the fly if needed
+            // Verify decryption now works cleanly
             try {
                 $sec = $user->api_secret;
-                $out['decrypt_status'] = 'OK';
-            } catch (\Illuminate\Contracts\Encryption\DecryptException $de) {
-                $user->api_secret = 'sec_arIFgtqDF92CnF2uV8IZYk4ZQHfg0LsfyIRxddhD';
-                $user->webhook_secret = 'sec_arIFgtqDF92CnF2uV8IZYk4ZQHfg0LsfyIRxddhD';
-                $user->save();
-                $out['decrypt_status'] = 'Repaired with current APP_KEY';
+                $out['decrypt_status'] = 'SUCCESS: Decrypted api_secret matches clean secret: ' . ($sec === $cleanSecret ? 'YES' : 'NO');
+            } catch (\Throwable $de) {
+                $out['decrypt_status'] = 'FAIL: ' . $de->getMessage();
             }
 
             // Ensure payment account exists
@@ -65,7 +72,6 @@ Route::get('/__api_debug', function (Request $request) {
                 'email' => $user->email,
                 'is_active' => $user->is_active,
                 'api_key' => $user->api_key,
-                'api_secret_len' => strlen((string)$user->api_secret),
             ];
             $accounts = $user->paymentAccounts()->get();
             $out['accounts_count'] = $accounts->count();
