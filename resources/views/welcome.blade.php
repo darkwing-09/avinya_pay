@@ -2,11 +2,11 @@
 @section('title', 'Accept UPI payments directly in your bank account')
 
 @section('body')
-<div class="bg-white">
+<div class="bg-[#07070a] text-[#fafafc]">
     @include('layouts.public-nav')
 
     {{-- Hero --}}
-    <section class="relative overflow-hidden bg-white">
+    <section class="relative overflow-hidden bg-[#07070a]">
         <div class="absolute inset-0 -z-0" style="background: radial-gradient(900px circle at 80% -10%, rgb(99 102 241 / .13), transparent 55%), radial-gradient(600px circle at 5% 100%, rgb(14 165 233 / .09), transparent 55%);"></div>
         <div class="absolute top-16 right-0 w-80 h-80 bg-brand-100/30 rounded-full blur-3xl -z-0 pointer-events-none"></div>
         <div class="absolute bottom-0 left-0 w-64 h-64 bg-sky-100/30 rounded-full blur-3xl -z-0 pointer-events-none"></div>
@@ -19,15 +19,15 @@
                     <x-icon name="arrow-right" class="w-3 h-3" />
                 </a>
                 @endif
-                <h1 class="mt-6 text-4xl sm:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-slate-900 leading-[1.08]">
+                <h1 class="mt-6 text-4xl sm:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-white leading-[1.08]">
                     Accept UPI payments
                     <span class="relative whitespace-nowrap">
-                        <span class="bg-gradient-to-r from-brand-600 to-sky-500 bg-clip-text text-transparent">directly</span>
-                        <svg class="absolute -bottom-1 left-0 w-full" viewBox="0 0 200 8" fill="none" preserveAspectRatio="none"><path d="M0 6 Q50 0 100 4 Q150 8 200 2" stroke="url(#ug)" stroke-width="2.5" stroke-linecap="round" fill="none"/><defs><linearGradient id="ug" x1="0" y1="0" x2="200" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#4f46e5"/><stop offset="1" stop-color="#0ea5e9"/></linearGradient></defs></svg>
+                        <span class="bg-gradient-to-r from-[#38bdf8] to-[#0284c7] bg-clip-text text-transparent">directly</span>
+                        <svg class="absolute -bottom-1 left-0 w-full" viewBox="0 0 200 8" fill="none" preserveAspectRatio="none"><path d="M0 6 Q50 0 100 4 Q150 8 200 2" stroke="url(#ug)" stroke-width="2.5" stroke-linecap="round" fill="none"/><defs><linearGradient id="ug" x1="0" y1="0" x2="200" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#0ea5e9"/></linearGradient></defs></svg>
                     </span>
                     in your bank account
                 </h1>
-                <p class="mt-6 text-lg text-slate-600 max-w-xl leading-relaxed">Dynamic QR for every order, automatic payment confirmation and signed webhooks. No settlement delays — money lands straight in your own UPI account.</p>
+                <p class="mt-6 text-lg text-slate-400 max-w-xl leading-relaxed">Dynamic QR for every order, automatic payment confirmation and signed webhooks. No settlement delays — money lands straight in your own UPI account.</p>
                 <div class="mt-10 flex flex-wrap gap-3">
                     @if (config('auth.allow_registration', false))
                     <a href="{{ route('register') }}" class="btn btn-primary btn-lg shadow-lg shadow-brand-600/30 hover:shadow-xl hover:shadow-brand-600/40 transition-all">Start for free <x-icon name="arrow-right" class="w-5 h-5" /></a>
@@ -44,16 +44,16 @@
             {{-- Product mock --}}
             <div class="relative mx-auto w-full max-w-md">
                 <div class="absolute -inset-4 bg-gradient-to-tr from-brand-200/50 to-sky-200/40 blur-2xl rounded-[2rem]"></div>
-                <div class="relative bg-white rounded-2xl shadow-pop ring-1 ring-slate-200 overflow-hidden">
+                <div class="relative bg-[#07070a] rounded-2xl shadow-pop ring-1 ring-white/10 overflow-hidden">
                     <div class="bg-slate-950 text-white px-6 py-5 flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <x-avatar name="Sharma Electronics" class="!bg-white/10 !text-white" />
+                            <x-avatar name="Sharma Electronics" class="!bg-[#07070a]/10 !text-white" />
                             <div><div class="text-xs text-slate-400">Paying to</div><div class="font-semibold text-sm">Sharma Electronics</div></div>
                         </div>
                         <div class="text-right"><div class="text-xs text-slate-400">Amount</div><div class="font-bold">₹2,499.00</div></div>
                     </div>
                     <div class="p-6 flex flex-col items-center">
-                        <div class="p-3 rounded-xl ring-1 ring-slate-200">
+                        <div class="p-3 rounded-xl ring-1 ring-white/10">
                             <svg viewBox="0 0 29 29" class="w-40 h-40" shape-rendering="crispEdges">
                                 @php
                                     // Decorative QR-like pattern for the illustration.
@@ -72,24 +72,24 @@
                         </div>
                         <div class="mt-4 flex gap-2">
                             @foreach ([['GPay', 'text-[#1a73e8]'], ['PhonePe', 'text-[#5f259f]'], ['Paytm', 'text-[#00baf2]'], ['BHIM', 'text-[#f47920]']] as [$app, $c])
-                                <span class="rounded-full bg-slate-50 ring-1 ring-slate-200 px-2.5 py-0.5 text-[11px] font-bold {{ $c }}">{{ $app }}</span>
+                                <span class="rounded-full bg-[#101016] ring-1 ring-white/10 px-2.5 py-0.5 text-[11px] font-bold {{ $c }}">{{ $app }}</span>
                             @endforeach
                         </div>
                     </div>
                 </div>
-                <div class="absolute -right-4 sm:-right-10 bottom-10 bg-white rounded-xl shadow-pop ring-1 ring-slate-200 px-4 py-3 flex items-center gap-3">
+                <div class="absolute -right-4 sm:-right-10 bottom-10 bg-[#07070a] rounded-xl shadow-pop ring-1 ring-white/10 px-4 py-3 flex items-center gap-3">
                     <span class="grid place-items-center w-9 h-9 rounded-full bg-emerald-500 text-white"><x-icon name="check" class="w-5 h-5" /></span>
-                    <div><div class="text-sm font-semibold text-slate-900">Payment received</div><div class="text-xs text-slate-500">₹2,499.00 · just now</div></div>
+                    <div><div class="text-sm font-semibold text-white">Payment received</div><div class="text-xs text-slate-500">₹2,499.00 · just now</div></div>
                 </div>
-                <div class="absolute -left-4 sm:-left-10 top-24 bg-white rounded-xl shadow-pop ring-1 ring-slate-200 px-3 py-2 flex items-center gap-2">
-                    <x-icon name="link" class="w-4 h-4 text-brand-600" /><span class="font-mono text-[11px] text-slate-700">order.paid → 200 OK</span>
+                <div class="absolute -left-4 sm:-left-10 top-24 bg-[#07070a] rounded-xl shadow-pop ring-1 ring-white/10 px-3 py-2 flex items-center gap-2">
+                    <x-icon name="link" class="w-4 h-4 text-brand-600" /><span class="font-mono text-[11px] text-slate-300">order.paid → 200 OK</span>
                 </div>
             </div>
         </div>
     </section>
 
     {{-- Stats --}}
-    <section class="border-y border-slate-200/70 bg-slate-50 py-12">
+    <section class="border-y border-white/10 bg-[#101016] py-12">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
                 @foreach ([
@@ -108,7 +108,7 @@
     </section>
 
     {{-- Integrations strip --}}
-    <section class="bg-white py-10 border-b border-slate-200/70">
+    <section class="bg-[#07070a] py-10 border-b border-white/10">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 text-center">
             <p class="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-6">Works with all major UPI apps</p>
             <div class="flex flex-wrap justify-center items-center gap-6">
@@ -120,7 +120,7 @@
                     ['Amazon Pay', '#ff9900', 'A'],
                     ['CRED', '#1c1c1c', 'C'],
                 ] as [$name, $color, $letter])
-                    <div class="flex items-center gap-2 rounded-full bg-slate-50 ring-1 ring-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:ring-slate-300 transition-all">
+                    <div class="flex items-center gap-2 rounded-full bg-[#101016] ring-1 ring-white/10 px-4 py-2 text-sm font-semibold text-slate-300 hover:ring-slate-300 transition-all">
                         <span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] font-bold" style="background:{{ $color }}">{{ $letter }}</span>
                         {{ $name }}
                     </div>
@@ -130,12 +130,12 @@
     </section>
 
     {{-- Features --}}
-    <section id="features" class="bg-slate-50 border-y border-slate-200/70 py-20 lg:py-28">
+    <section id="features" class="bg-[#101016] border-y border-white/10 py-20 lg:py-28">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
             <div class="max-w-2xl">
                 <div class="text-sm font-semibold text-brand-600">Everything you need</div>
-                <h2 class="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">A complete UPI checkout, without a payment aggregator</h2>
-                <p class="mt-4 text-lg text-slate-600">Keep your own UPI account and get the automation of a payment gateway.</p>
+                <h2 class="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-white">A complete UPI checkout, without a payment aggregator</h2>
+                <p class="mt-4 text-lg text-slate-400">Keep your own UPI account and get the automation of a payment gateway.</p>
             </div>
             <div class="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 @foreach ([
@@ -150,8 +150,8 @@
                         <div class="grid place-items-center w-11 h-11 rounded-xl {{ $bg }} text-white shadow-sm">
                             <x-icon :name="$icon" class="w-5 h-5" />
                         </div>
-                        <h3 class="mt-5 font-semibold text-slate-900 group-hover:text-brand-700 transition-colors">{{ $title }}</h3>
-                        <p class="mt-2 text-sm text-slate-600 leading-relaxed">{{ $text }}</p>
+                        <h3 class="mt-5 font-semibold text-white group-hover:text-brand-700 transition-colors">{{ $title }}</h3>
+                        <p class="mt-2 text-sm text-slate-400 leading-relaxed">{{ $text }}</p>
                     </div>
                 @endforeach
             </div>
@@ -159,16 +159,16 @@
     </section>
 
     {{-- Comparison --}}
-    <section class="py-20 lg:py-24 bg-white border-b border-slate-200/70">
+    <section class="py-20 lg:py-24 bg-[#07070a] border-b border-white/10">
         <div class="mx-auto max-w-4xl px-4 sm:px-6">
             <div class="text-center mb-12">
                 <div class="text-sm font-semibold text-brand-600">Why choose us</div>
-                <h2 class="mt-2 text-3xl font-bold tracking-tight text-slate-900">vs traditional payment gateways</h2>
+                <h2 class="mt-2 text-3xl font-bold tracking-tight text-white">vs traditional payment gateways</h2>
             </div>
             <div class="card overflow-hidden">
                 <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-100 text-sm">
-                    <thead class="bg-slate-50">
+                    <thead class="bg-[#101016]">
                         <tr>
                             <th class="th text-left w-1/2">Feature</th>
                             <th class="th text-center text-brand-700">{{ config('app.name') }}</th>
@@ -185,8 +185,8 @@
                             ['Dynamic QR per order', true, false],
                             ['Webhook with HMAC', true, true],
                         ] as [$feature, $ours, $theirs])
-                            <tr class="hover:bg-slate-50/50 transition-colors">
-                                <td class="td font-medium text-slate-700">{{ $feature }}</td>
+                            <tr class="hover:bg-[#101016]/50 transition-colors">
+                                <td class="td font-medium text-slate-300">{{ $feature }}</td>
                                 <td class="td text-center">
                                     @if ($ours === true) <x-icon name="check" class="w-5 h-5 text-emerald-500 mx-auto" />
                                     @elseif ($ours === false) <x-icon name="x-mark" class="w-5 h-5 text-slate-300 mx-auto" />
@@ -210,7 +210,7 @@
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
             <div class="text-center mb-12">
                 <div class="text-sm font-semibold text-brand-600">Trusted by merchants</div>
-                <h2 class="mt-2 text-3xl font-bold tracking-tight text-slate-900">What our users say</h2>
+                <h2 class="mt-2 text-3xl font-bold tracking-tight text-white">What our users say</h2>
             </div>
             <div class="grid sm:grid-cols-3 gap-6">
                 @foreach ([
@@ -224,10 +224,10 @@
                                 <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                             @endfor
                         </div>
-                        <p class="text-slate-600 text-sm leading-relaxed flex-1">"{{ $quote }}"</p>
+                        <p class="text-slate-400 text-sm leading-relaxed flex-1">"{{ $quote }}"</p>
                         <div class="flex items-center gap-3 pt-2 border-t border-slate-100">
                             <div class="grid place-items-center w-9 h-9 rounded-full bg-brand-600 text-white text-xs font-bold">{{ $initials }}</div>
-                            <div><div class="text-sm font-semibold text-slate-900">{{ $name }}</div><div class="text-xs text-slate-500">{{ $role }}</div></div>
+                            <div><div class="text-sm font-semibold text-white">{{ $name }}</div><div class="text-xs text-slate-500">{{ $role }}</div></div>
                         </div>
                     </div>
                 @endforeach
@@ -240,7 +240,7 @@
         <div class="mx-auto max-w-6xl px-4 sm:px-6 grid lg:grid-cols-2 gap-16 items-center">
             <div>
                 <div class="text-sm font-semibold text-brand-600">How it works</div>
-                <h2 class="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">Live in four simple steps</h2>
+                <h2 class="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-white">Live in four simple steps</h2>
                 <ol class="mt-10 space-y-8">
                     @foreach ([
                         ['Connect your UPI', 'Add your Paytm for Business or any UPI ID in the dashboard.'],
@@ -250,7 +250,7 @@
                     ] as [$title, $text])
                         <li class="flex gap-5">
                             <span class="grid place-items-center w-10 h-10 rounded-full bg-brand-50 text-brand-700 font-bold ring-1 ring-brand-200 shrink-0">{{ $loop->iteration }}</span>
-                            <div><h3 class="font-semibold text-slate-900">{{ $title }}</h3><p class="mt-1 text-slate-600">{{ $text }}</p></div>
+                            <div><h3 class="font-semibold text-white">{{ $title }}</h3><p class="mt-1 text-slate-400">{{ $text }}</p></div>
                         </li>
                     @endforeach
                 </ol>
@@ -277,22 +277,22 @@
     </section>
 
     {{-- Pricing --}}
-    <section id="pricing" class="bg-slate-50 border-y border-slate-200/70 py-20 lg:py-28">
+    <section id="pricing" class="bg-[#101016] border-y border-white/10 py-20 lg:py-28">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 text-center">
             <div class="text-sm font-semibold text-brand-600">Pricing</div>
-            <h2 class="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">Simple and transparent</h2>
-            <p class="mt-4 text-lg text-slate-600">No per-transaction cut. Keep 100% of every payment.</p>
+            <h2 class="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-white">Simple and transparent</h2>
+            <p class="mt-4 text-lg text-slate-400">No per-transaction cut. Keep 100% of every payment.</p>
             <div class="mt-12 grid sm:grid-cols-3 gap-6 items-stretch">
 
                 {{-- Starter --}}
                 <div class="card p-8 text-left flex flex-col">
-                    <div class="font-semibold text-slate-900 text-lg">Starter</div>
+                    <div class="font-semibold text-white text-lg">Starter</div>
                     <p class="mt-1 text-sm text-slate-500">Perfect for individuals & small stores</p>
                     <div class="mt-6 flex items-baseline gap-1">
-                        <span class="text-5xl font-extrabold tracking-tight text-slate-900">Free</span>
+                        <span class="text-5xl font-extrabold tracking-tight text-white">Free</span>
                     </div>
                     <div class="mt-1 text-sm text-slate-500">0% transaction fee · forever</div>
-                    <ul class="mt-8 space-y-3 text-sm text-slate-700 flex-1">
+                    <ul class="mt-8 space-y-3 text-sm text-slate-300 flex-1">
                         @foreach ([
                             '1 UPI account',
                             'Up to ₹50,000/day',
@@ -311,14 +311,14 @@
                 {{-- Pro --}}
                 <div class="card p-8 text-left flex flex-col ring-2 ring-brand-600 relative">
                     <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-brand-600 px-3 py-0.5 text-xs font-semibold text-white">Most popular</span>
-                    <div class="font-semibold text-slate-900 text-lg">Pro</div>
+                    <div class="font-semibold text-white text-lg">Pro</div>
                     <p class="mt-1 text-sm text-slate-500">For growing businesses</p>
                     <div class="mt-6 flex items-baseline gap-1">
-                        <span class="text-5xl font-extrabold tracking-tight text-slate-900">₹999</span>
+                        <span class="text-5xl font-extrabold tracking-tight text-white">₹999</span>
                         <span class="text-slate-500">/month</span>
                     </div>
                     <div class="mt-1 text-sm text-slate-500">0% transaction fee</div>
-                    <ul class="mt-8 space-y-3 text-sm text-slate-700 flex-1">
+                    <ul class="mt-8 space-y-3 text-sm text-slate-300 flex-1">
                         @foreach ([
                             'Up to 5 UPI accounts',
                             'Up to ₹5,00,000/day',
@@ -338,14 +338,14 @@
 
                 {{-- Business --}}
                 <div class="card p-8 text-left flex flex-col">
-                    <div class="font-semibold text-slate-900 text-lg">Business</div>
+                    <div class="font-semibold text-white text-lg">Business</div>
                     <p class="mt-1 text-sm text-slate-500">For high-volume operations</p>
                     <div class="mt-6 flex items-baseline gap-1">
-                        <span class="text-5xl font-extrabold tracking-tight text-slate-900">₹2,999</span>
+                        <span class="text-5xl font-extrabold tracking-tight text-white">₹2,999</span>
                         <span class="text-slate-500">/month</span>
                     </div>
                     <div class="mt-1 text-sm text-slate-500">0% transaction fee</div>
-                    <ul class="mt-8 space-y-3 text-sm text-slate-700 flex-1">
+                    <ul class="mt-8 space-y-3 text-sm text-slate-300 flex-1">
                         @foreach ([
                             'Unlimited UPI accounts',
                             'Unlimited daily volume',
@@ -370,11 +370,11 @@
     </section>
 
     {{-- FAQ --}}
-    <section class="py-20 lg:py-28 bg-slate-50 border-t border-slate-200/70">
+    <section class="py-20 lg:py-28 bg-[#101016] border-t border-white/10">
         <div class="mx-auto max-w-3xl px-4 sm:px-6">
             <div class="text-center mb-12">
                 <div class="text-sm font-semibold text-brand-600">FAQ</div>
-                <h2 class="mt-2 text-3xl font-bold tracking-tight text-slate-900">Frequently asked questions</h2>
+                <h2 class="mt-2 text-3xl font-bold tracking-tight text-white">Frequently asked questions</h2>
             </div>
             <div class="space-y-3">
                 @foreach ([
@@ -386,13 +386,13 @@
                     ['Can I use multiple UPI accounts?', 'Yes. Pro and Business plans support multiple UPI accounts with automatic rotation and per-account daily limits.'],
                 ] as [$q, $a])
                     <details class="group card px-6 py-5 open:shadow-md transition-shadow">
-                        <summary class="flex cursor-pointer list-none items-center justify-between font-semibold text-slate-900 gap-4">
+                        <summary class="flex cursor-pointer list-none items-center justify-between font-semibold text-white gap-4">
                             <span>{{ $q }}</span>
-                            <span class="grid place-items-center w-6 h-6 rounded-full bg-slate-100 group-open:bg-brand-100 shrink-0 transition-colors">
+                            <span class="grid place-items-center w-6 h-6 rounded-full bg-[#17171f] group-open:bg-brand-100 shrink-0 transition-colors">
                                 <x-icon name="chevron-down" class="w-4 h-4 text-slate-500 group-open:text-brand-600 transition group-open:rotate-180" />
                             </span>
                         </summary>
-                        <p class="mt-3 text-slate-600 leading-relaxed">{{ $a }}</p>
+                        <p class="mt-3 text-slate-400 leading-relaxed">{{ $a }}</p>
                     </details>
                 @endforeach
             </div>
@@ -405,16 +405,16 @@
             <div class="absolute inset-0" style="background: radial-gradient(700px circle at 50% -20%, rgb(79 70 229 / .7), transparent 55%), radial-gradient(400px circle at 80% 120%, rgb(14 165 233 / .4), transparent 55%);"></div>
             <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.03\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
             <div class="relative">
-                <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/80 ring-1 ring-white/20 mb-6">
+                <span class="inline-flex items-center gap-2 rounded-full bg-[#07070a]/10 px-3 py-1 text-xs font-semibold text-white/80 ring-1 ring-white/20 mb-6">
                     <span class="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span> Free forever · No credit card needed
                 </span>
                 <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">Start accepting UPI payments today</h2>
                 <p class="mt-4 text-lg text-slate-300 max-w-xl mx-auto">Set up in minutes. No paperwork, no setup fee. Money goes directly to your bank account.</p>
                 <div class="mt-8 flex flex-wrap justify-center gap-3">
                     @if (config('auth.allow_registration', false))
-                    <a href="{{ route('register') }}" class="btn btn-lg bg-white text-slate-900 hover:bg-slate-100 shadow-xl">Create free account <x-icon name="arrow-right" class="w-5 h-5" /></a>
+                    <a href="{{ route('register') }}" class="btn btn-lg bg-[#07070a] text-white hover:bg-[#17171f] shadow-xl">Create free account <x-icon name="arrow-right" class="w-5 h-5" /></a>
                     @endif
-                    <a href="{{ route('docs') }}" class="btn btn-lg bg-white/10 text-white hover:bg-white/20 ring-1 ring-white/20"><x-icon name="code" class="w-5 h-5" /> View API docs</a>
+                    <a href="{{ route('docs') }}" class="btn btn-lg bg-[#07070a]/10 text-white hover:bg-[#07070a]/20 ring-1 ring-white/20"><x-icon name="code" class="w-5 h-5" /> View API docs</a>
                 </div>
             </div>
         </div>
@@ -425,7 +425,7 @@
         <div class="mx-auto max-w-6xl px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p class="flex items-center gap-2 text-white text-sm font-medium"><x-icon name="bolt" class="w-4 h-4" /> Join hundreds of merchants already using {{ config('app.name') }}</p>
             @if (config('auth.allow_registration', false))
-            <a href="{{ route('register') }}" class="btn bg-white text-brand-700 hover:bg-brand-50 shrink-0 text-sm">Get started free <x-icon name="arrow-right" class="w-4 h-4" /></a>
+            <a href="{{ route('register') }}" class="btn bg-[#07070a] text-brand-700 hover:bg-brand-50 shrink-0 text-sm">Get started free <x-icon name="arrow-right" class="w-4 h-4" /></a>
             @endif
         </div>
     </div>
@@ -439,7 +439,7 @@
                     @if (config('auth.allow_registration', false))
                     <a href="{{ route('register') }}" class="btn btn-primary btn-sm">Get started</a>
                     @endif
-                    <a href="{{ route('docs') }}" class="btn bg-white/10 text-white hover:bg-white/20 btn-sm">API Docs</a>
+                    <a href="{{ route('docs') }}" class="btn bg-[#07070a]/10 text-white hover:bg-[#07070a]/20 btn-sm">API Docs</a>
                 </div>
             </div>
             <div>

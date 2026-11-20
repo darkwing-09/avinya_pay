@@ -2,5 +2,53 @@
 @keyframes draw { to { stroke-dashoffset: 0 } }
 .pop { animation: pop .5s cubic-bezier(.2,.9,.3,1.2) both }
 .draw { stroke-dasharray: 30; stroke-dashoffset: 30; animation: draw .45s .3s ease-out forwards }
-.hero-gradient { background: radial-gradient(400px circle at 0% 0%, rgb(79 70 229 / .6), transparent 60%); }
+.hero-gradient { background: radial-gradient(500px circle at 0% 0%, rgba(56, 189, 248, 0.25), transparent 70%); }
 .ring-transition { transition: stroke-dashoffset 1s linear; }
+
+/* GoCrazy Ambient Background */
+.gocrazy-bg {
+  background-color: #07070a;
+  background-image: 
+    radial-gradient(800px circle at 50% -20%, rgba(56, 189, 248, 0.18), transparent 70%),
+    radial-gradient(600px circle at 85% 100%, rgba(56, 189, 248, 0.08), transparent 60%);
+  color: #fafafc;
+}
+
+/* Glassmorphism panels */
+.gocrazy-glass {
+  background: rgba(16, 16, 22, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 50px -12px rgba(56, 189, 248, 0.18);
+}
+
+.gocrazy-surface {
+  background: #101016;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.gocrazy-raised {
+  background: #17171f;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.gocrazy-accent {
+  color: #38bdf8;
+}
+
+.gocrazy-accent-glow {
+  box-shadow: 0 0 25px -4px rgba(56, 189, 248, 0.45);
+}
+
+.gocrazy-btn {
+  background: #38bdf8;
+  color: #041419;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gocrazy-btn:hover {
+  background: #7dd3fc;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+}

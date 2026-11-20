@@ -6,10 +6,10 @@
     $amount = number_format($order->amount, 2);
     $totalSeconds = max(1, $order->created_at->diffInSeconds($order->expires_at ?? now()->addMinutes(config('gateway.order_expiry_minutes', 15))));
     $apps = [
-        ['GPay',    'tez://upi/pay',   'text-[#1a73e8]', 'images/upi/gpay.png'],
-        ['PhonePe', 'phonepe://pay',   'text-[#5f259f]', 'images/upi/phonepe.png'],
-        ['Paytm',   'paytmmp://pay',   'text-[#00baf2]', 'images/upi/paytm.png'],
-        ['BHIM',    'upi://pay',       'text-[#f47920]', 'images/upi/bhim.png'],
+        ['GPay',    'tez://upi/pay',   'hover:border-[#38bdf8]/60 text-white', 'images/upi/gpay.png'],
+        ['PhonePe', 'phonepe://pay',   'hover:border-[#38bdf8]/60 text-white', 'images/upi/phonepe.png'],
+        ['Paytm',   'paytmmp://pay',   'hover:border-[#38bdf8]/60 text-white', 'images/upi/paytm.png'],
+        ['BHIM',    'upi://pay',       'hover:border-[#38bdf8]/60 text-white', 'images/upi/bhim.png'],
     ];
 @endphp
 
@@ -19,211 +19,188 @@
 @endpush
 
 @section('body')
-<div class="min-h-full bg-slate-100 flex flex-col">
-    <div class="flex-1 flex items-center justify-center p-4 sm:p-8">
-        <div class="w-full max-w-3xl bg-white rounded-2xl shadow-pop ring-1 ring-slate-200 overflow-hidden grid md:grid-cols-5">
+<div class="min-h-full gocrazy-bg flex flex-col justify-between selection:bg-[#38bdf8]/20 selection:text-white">
 
-            {{-- Summary --}}
-            <div class="md:col-span-2 relative bg-slate-950 text-white p-6 sm:p-8 flex flex-col overflow-hidden">
-                <div class="hero-gradient absolute inset-0 opacity-50"></div>
-                <div class="relative flex items-center gap-3">
-                    <x-avatar :name="$merchant" size="w-11 h-11 text-base" class="!bg-white/10 !text-white ring-1 ring-white/20" />
-                    <div class="min-w-0">
-                        <div class="text-xs text-slate-400">Paying to</div>
-                        <div class="font-semibold truncate">{{ $merchant }}</div>
-                    </div>
-                </div>
+    {{-- Ambient Top Glow (GoCrazy signature) --}}
+    <div class="fixed top-0 inset-x-0 h-96 pointer-events-none -z-10" style="background: radial-gradient(55% 100% at 50% 0%, rgba(56, 189, 248, 0.15), transparent 70%);"></div>
 
-                <div class="relative mt-8">
-                    <div class="text-xs uppercase tracking-wider text-slate-400">Amount</div>
-                    <div class="mt-1 text-4xl font-bold tracking-tight tabular-nums">₹{{ $amount }}</div>
-                    @if ($order->note)<div class="mt-2 text-sm text-slate-300">{{ $order->note }}</div>@endif
-                </div>
+    {{-- Main Checkout Container --}}
+    <div class="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div class="w-full max-w-3xl gocrazy-glass rounded-2xl overflow-hidden grid md:grid-cols-5 ring-1 ring-white/10 shadow-2xl">
 
-                <dl class="relative mt-8 space-y-3 text-sm">
-                    <div class="flex justify-between gap-4"><dt class="text-slate-400 whitespace-nowrap">Order ID</dt><dd class="font-mono text-xs text-slate-200 truncate">{{ $order->order_no }}</dd></div>
-                    @if ($order->customer_name)
-                        <div class="flex justify-between gap-4"><dt class="text-slate-400 whitespace-nowrap">Customer</dt><dd class="text-slate-200 truncate">{{ $order->customer_name }}</dd></div>
-                    @endif
-                    @if ($order->paymentAccount->upi_id)
-                        <div class="flex justify-between gap-4"><dt class="text-slate-400 whitespace-nowrap">UPI ID</dt><dd class="font-mono text-xs text-slate-200 truncate">{{ $order->paymentAccount->upi_id }}</dd></div>
-                    @endif
-                </dl>
+            {{-- Summary Sidebar (Left column) --}}
+            <div class="md:col-span-2 relative bg-[#0a0a0f] text-[#fafafc] p-6 sm:p-8 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/10 overflow-hidden">
+                <div class="hero-gradient absolute inset-0 opacity-40"></div>
 
-                @if ($order->isPending())
-                    <div class="relative mt-8 md:mt-auto pt-8 flex items-center gap-4">
-                        <div class="relative w-14 h-14">
-                            <svg viewBox="0 0 36 36" class="w-14 h-14 -rotate-90">
-                                <circle cx="18" cy="18" r="16" fill="none" stroke="rgb(255 255 255 / .12)" stroke-width="3" />
-                                <circle id="ring" cx="18" cy="18" r="16" fill="none" stroke="#818cf8" stroke-width="3" stroke-linecap="round" stroke-dasharray="100.5" stroke-dashoffset="0" class="ring-transition" />
-                            </svg>
-                            <div id="timer" class="absolute inset-0 grid place-items-center font-mono text-xs font-medium">--:--</div>
+                <div>
+                    {{-- Merchant Brand Header --}}
+                    <div class="relative flex items-center gap-3">
+                        <x-avatar :name="$merchant" size="w-11 h-11 text-base" class="!bg-[#17171f] !text-[#38bdf8] ring-1 ring-white/10" />
+                        <div class="min-w-0">
+                            <div class="text-[11px] font-medium tracking-wide uppercase text-slate-400">Paying to</div>
+                            <div class="font-bold text-white truncate text-base">{{ $merchant }}</div>
                         </div>
-                        <div class="text-sm">
-                            <div class="font-medium">Complete payment in time</div>
-                            <div class="text-xs text-slate-400">This QR code expires automatically.</div>
+                    </div>
+
+                    {{-- Amount --}}
+                    <div class="relative mt-8">
+                        <div class="text-xs uppercase tracking-wider font-semibold text-[#38bdf8]">Total Amount</div>
+                        <div class="mt-1 text-4xl sm:text-5xl font-extrabold tracking-tight tabular-nums text-white flex items-baseline gap-1">
+                            <span class="text-2xl text-[#38bdf8]">₹</span>{{ $amount }}
+                        </div>
+                        @if ($order->note)
+                            <div class="mt-2 text-xs text-slate-300 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 inline-block">{{ $order->note }}</div>
+                        @endif
+                    </div>
+
+                    {{-- Order Breakdown --}}
+                    <dl class="relative mt-8 space-y-3 text-xs">
+                        <div class="flex justify-between gap-4 py-1.5 border-b border-white/5">
+                            <dt class="text-slate-400">Order ID</dt>
+                            <dd class="font-mono text-slate-200 truncate">{{ $order->order_no }}</dd>
+                        </div>
+                        @if ($order->customer_name)
+                            <div class="flex justify-between gap-4 py-1.5 border-b border-white/5">
+                                <dt class="text-slate-400">Customer</dt>
+                                <dd class="text-slate-200 truncate">{{ $order->customer_name }}</dd>
+                            </div>
+                        @endif
+                        @if ($order->paymentAccount->upi_id)
+                            <div class="flex justify-between gap-4 py-1.5 border-b border-white/5">
+                                <dt class="text-slate-400">UPI ID</dt>
+                                <dd class="font-mono text-[#38bdf8] truncate font-semibold">{{ $order->paymentAccount->upi_id }}</dd>
+                            </div>
+                        @endif
+                    </dl>
+                </div>
+
+                {{-- Timer Section --}}
+                @if ($order->isPending())
+                    <div class="relative mt-8 pt-6 border-t border-white/10 flex items-center gap-4">
+                        <div class="relative w-12 h-12 shrink-0">
+                            <svg viewBox="0 0 36 36" class="w-12 h-12 -rotate-90">
+                                <circle cx="18" cy="18" r="16" fill="none" stroke="rgba(255, 255, 255, 0.08)" stroke-width="3" />
+                                <circle id="ring" cx="18" cy="18" r="16" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-dasharray="100.5" stroke-dashoffset="0" class="ring-transition" />
+                            </svg>
+                            <div id="timer" class="absolute inset-0 grid place-items-center font-mono text-xs font-bold text-[#38bdf8]">--:--</div>
+                        </div>
+                        <div class="text-xs">
+                            <div class="font-semibold text-white">Complete payment in time</div>
+                            <div class="text-slate-400 text-[11px]">QR code expires automatically.</div>
                         </div>
                     </div>
                 @endif
             </div>
 
-            {{-- Action area --}}
-            <div class="md:col-span-3 p-6 sm:p-8 flex flex-col">
+            {{-- Action Area (Right Column) --}}
+            <div class="md:col-span-3 p-6 sm:p-8 flex flex-col justify-between bg-[#101016]">
                 @if ($order->status === 'paid')
                     <div class="flex-1 flex flex-col items-center justify-center text-center py-8">
-                        <div class="pop grid place-items-center w-20 h-20 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/30">
-                            <svg viewBox="0 0 24 24" class="w-10 h-10" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path class="draw" d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+                        <div class="pop grid place-items-center w-20 h-20 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-lg shadow-emerald-500/20">
+                            <svg viewBox="0 0 24 24" class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path class="draw" d="m5 12.5 4.5 4.5L19 7.5" /></svg>
                         </div>
-                        <h1 class="mt-6 text-2xl font-bold tracking-tight text-slate-900">Payment successful</h1>
-                        <p class="mt-2 text-slate-500">₹{{ $amount }} paid to {{ $merchant }}</p>
-                        <dl class="mt-8 w-full max-w-xs rounded-xl bg-slate-50 ring-1 ring-slate-200 divide-y divide-slate-200 text-sm text-left">
-                            @if ($order->utr)<div class="flex justify-between px-4 py-3"><dt class="text-slate-500">UTR</dt><dd class="font-mono font-medium text-slate-900">{{ $order->utr }}</dd></div>@endif
-                            <div class="flex justify-between px-4 py-3"><dt class="text-slate-500">Paid at</dt><dd class="font-medium text-slate-900">{{ $order->paid_at?->format('d M Y, h:i A') }}</dd></div>
+                        <h1 class="mt-6 text-2xl font-bold tracking-tight text-white">Payment Successful</h1>
+                        <p class="mt-2 text-sm text-slate-300">₹{{ $amount }} paid directly to {{ $merchant }}</p>
+                        
+                        <dl class="mt-8 w-full max-w-xs rounded-xl bg-[#17171f] border border-white/10 divide-y divide-white/5 text-xs text-left">
+                            @if ($order->utr)
+                                <div class="flex justify-between px-4 py-3"><dt class="text-slate-400">UTR</dt><dd class="font-mono font-semibold text-[#38bdf8]">{{ $order->utr }}</dd></div>
+                            @endif
+                            <div class="flex justify-between px-4 py-3"><dt class="text-slate-400">Paid at</dt><dd class="font-medium text-slate-200">{{ $order->paid_at?->format('d M Y, h:i A') }}</dd></div>
                         </dl>
-                        <p class="mt-6 text-xs text-slate-400">You can safely close this page.</p>
+                        <p class="mt-6 text-xs text-slate-500">You can safely close this window.</p>
                     </div>
+
                 @elseif ($order->status === 'review')
                     <div class="flex-1 flex flex-col items-center justify-center text-center py-8">
-                        <div class="relative grid place-items-center w-20 h-20 rounded-full bg-sky-50 text-sky-600">
+                        <div class="relative grid place-items-center w-20 h-20 rounded-full bg-[#38bdf8]/10 text-[#38bdf8] border border-[#38bdf8]/30">
                             <svg class="absolute inset-0 w-20 h-20 animate-spin [animation-duration:2.5s]" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="38" stroke="currentColor" stroke-opacity=".15" stroke-width="3"/><path d="M78 40A38 38 0 0 0 40 2" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
                             <x-icon name="shield" class="w-9 h-9" />
                         </div>
-                        <h1 class="mt-6 text-2xl font-bold tracking-tight text-slate-900">Verifying your payment</h1>
-                        <p class="mt-2 text-sm text-slate-500 max-w-sm">{{ $merchant }} is confirming your UTR with their bank. This page updates automatically once it's approved.</p>
-                        <dl class="mt-8 w-full max-w-xs rounded-xl bg-slate-50 ring-1 ring-slate-200 divide-y divide-slate-200 text-sm text-left">
-                            <div class="flex justify-between px-4 py-3"><dt class="text-slate-500">Your UTR</dt><dd class="font-mono font-medium text-slate-900">{{ $order->customer_utr }}</dd></div>
-                            <div class="flex justify-between px-4 py-3"><dt class="text-slate-500">Submitted</dt><dd class="font-medium text-slate-900">{{ $order->utr_submitted_at?->format('d M, h:i A') }}</dd></div>
+                        <h1 class="mt-6 text-2xl font-bold tracking-tight text-white">Verifying your payment</h1>
+                        <p class="mt-2 text-xs text-slate-400 max-w-sm">{{ $merchant }} is confirming your transaction. This page automatically updates once verified.</p>
+                        
+                        <dl class="mt-8 w-full max-w-xs rounded-xl bg-[#17171f] border border-white/10 divide-y divide-white/5 text-xs text-left">
+                            <div class="flex justify-between px-4 py-3"><dt class="text-slate-400">Your UTR</dt><dd class="font-mono font-medium text-[#38bdf8]">{{ $order->customer_utr }}</dd></div>
+                            <div class="flex justify-between px-4 py-3"><dt class="text-slate-400">Submitted</dt><dd class="font-medium text-slate-200">{{ $order->utr_submitted_at?->format('d M, h:i A') }}</dd></div>
                         </dl>
-                        <p class="mt-6 text-xs text-slate-400">Don't pay again. You can close this page; the merchant will be notified once it's confirmed.</p>
+                        <p class="mt-6 text-xs text-slate-500">Please do not pay again. You can close this page.</p>
                     </div>
+
                 @elseif ($order->status === 'expired')
                     <div class="flex-1 flex flex-col items-center justify-center text-center py-8">
-                        <div class="grid place-items-center w-20 h-20 rounded-full bg-slate-100 text-slate-400"><x-icon name="clock" class="w-10 h-10" /></div>
-                        <h1 class="mt-6 text-2xl font-bold tracking-tight text-slate-900">Payment link expired</h1>
+                        <div class="grid place-items-center w-20 h-20 rounded-full bg-white/5 border border-white/10 text-slate-400"><x-icon name="clock" class="w-10 h-10" /></div>
+                        <h1 class="mt-6 text-2xl font-bold tracking-tight text-white">Payment link expired</h1>
                         @if ($order->canRecoverLatePayment())
-                            <p class="mt-2 text-sm text-slate-500 max-w-sm">Already paid? Don't pay again. We can still check the provider until {{ $order->expires_at->copy()->addHours((int) config('gateway.late_payment_grace_hours', 24))->format('d M, h:i A') }}. This page updates when payment is confirmed.</p>
+                            <p class="mt-2 text-xs text-slate-400 max-w-sm">Already paid? Don't pay again. We check until {{ $order->expires_at->copy()->addHours((int) config('gateway.late_payment_grace_hours', 24))->format('d M, h:i A') }}.</p>
                         @endif
                         @if ($order->acceptsCustomerUtr())
-                            <p class="mt-2 text-sm text-slate-500 max-w-sm">If you already paid, don't pay again — submit your UTR below so {{ $merchant }} can confirm it.</p>
+                            <p class="mt-2 text-xs text-slate-400 max-w-sm">If money was debited, submit your 12-digit UTR below:</p>
                             @include('pay._utr-form', ['class' => 'mt-8 w-full max-w-sm'])
                         @else
-                            <p class="mt-2 text-sm text-slate-500 max-w-xs">Please ask {{ $merchant }} for a new payment link.</p>
-                            <div class="mt-8 flex items-start gap-3 rounded-xl bg-amber-50 ring-1 ring-amber-200 px-4 py-3 text-left text-sm text-amber-800 max-w-sm">
-                                <x-icon name="alert" class="w-5 h-5 text-amber-600" />
-                                <div>If money was debited from your account, don't pay again. Share your UTR with the merchant to confirm the payment.</div>
-                            </div>
+                            <p class="mt-2 text-xs text-slate-400 max-w-xs">Please request a new payment link from {{ $merchant }}.</p>
                         @endif
                     </div>
-                @elseif ($order->paymentAccount->isHosted())
-                    @php $pgName = $order->paymentAccount->provider === 'phonepe_pg' ? 'PhonePe' : 'Paytm'; @endphp
-                    <div class="flex-1 flex flex-col items-center justify-center text-center py-6">
-                        <div class="grid place-items-center w-20 h-20 rounded-2xl {{ $pgName === 'PhonePe' ? 'bg-[#5f259f]' : 'bg-[#00baf2]' }} text-white shadow-lg">
-                            <x-icon name="lock" class="w-9 h-9" />
-                        </div>
-                        <h1 class="mt-6 text-xl font-bold tracking-tight text-slate-900">Pay securely with {{ $pgName }}</h1>
-                        <p class="mt-2 text-sm text-slate-500 max-w-sm">You'll complete the payment on {{ $pgName }}'s secure checkout using UPI, card or netbanking, then come back here automatically.</p>
 
-                        @error('checkout')
-                            <div class="mt-6 flex items-start gap-2 rounded-lg bg-red-50 ring-1 ring-red-200 px-3 py-2 text-left text-sm text-red-700 max-w-sm">
-                                <x-icon name="alert" class="w-5 h-5" /><div>{{ $message }}</div>
-                            </div>
-                        @enderror
-
-                        <form id="pg-start" method="POST" action="{{ route('pay.start', $order) }}" class="mt-8 w-full max-w-sm">
-                            @csrf
-                            <button class="btn btn-primary btn-lg w-full"><x-icon name="lock" class="w-5 h-5" /> Pay ₹{{ $amount }} with {{ $pgName }}</button>
-                        </form>
-                        <div class="mt-4 flex flex-wrap justify-center gap-2">
-                            @foreach ($apps as [$name, $scheme, $color, $logo])
-                                <span class="rounded-full bg-slate-50 ring-1 ring-slate-200 px-3 py-1 text-xs font-bold {{ $color }} flex items-center gap-1.5">
-                                    <img src="{{ asset($logo) }}" class="w-4 h-4 rounded-sm" alt="{{ $name }}">{{ $name }}
-                                </span>
-                            @endforeach
-                            <span class="rounded-full bg-slate-50 ring-1 ring-slate-200 px-3 py-1 text-xs font-semibold text-slate-600">Cards</span>
-                            <span class="rounded-full bg-slate-50 ring-1 ring-slate-200 px-3 py-1 text-xs font-semibold text-slate-600">Netbanking</span>
-                        </div>
-                        @if ($order->provider_checkout)
-                            <p class="mt-6 text-xs text-slate-500">Already paid? Stay on this page — we're checking with {{ $pgName }} automatically.</p>
-                        @endif
-                        <div class="mt-6 flex items-center justify-center gap-3">
-                            <div class="relative w-10 h-10">
-                                <svg viewBox="0 0 36 36" class="w-10 h-10 -rotate-90">
-                                    <circle cx="18" cy="18" r="16" fill="none" stroke="rgb(0 0 0 / .08)" stroke-width="3" />
-                                    <circle id="ring-pg" cx="18" cy="18" r="16" fill="none" stroke="#818cf8" stroke-width="3" stroke-linecap="round" stroke-dasharray="100.5" stroke-dashoffset="0" class="ring-transition" />
-                                </svg>
-                                <div id="timer-pg" class="absolute inset-0 grid place-items-center font-mono text-[10px] font-medium text-slate-700">--:--</div>
-                            </div>
-                            <div class="text-sm text-slate-500">Complete payment before time runs out</div>
-                        </div>
-                    </div>
-                    <div class="mt-auto">
-                        <div class="flex items-center justify-center gap-2.5 rounded-xl bg-slate-50 ring-1 ring-slate-200 px-4 py-3 text-sm text-slate-600">
-                            <svg class="w-4 h-4 animate-spin text-slate-400" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".25" stroke-width="3"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
-                            <span id="status-text">Waiting for payment…</span>
-                        </div>
-                    </div>
                 @else
+                    {{-- Active Pending State --}}
                     <div class="text-center">
-                        <h1 class="text-lg font-semibold text-slate-900">Scan &amp; pay with any UPI app</h1>
-                        <p class="text-sm text-slate-500 mt-1">Open your UPI app, scan the QR and approve the payment.</p>
+                        <h1 class="text-lg font-bold tracking-tight text-white">Scan &amp; Pay with Any UPI App</h1>
+                        <p class="text-xs text-slate-400 mt-1">Open your UPI app, scan the dynamic QR, and approve payment.</p>
                     </div>
 
-                    <div class="relative mx-auto mt-6 p-3 rounded-2xl bg-white ring-1 ring-slate-200 shadow-sm">
-                        <span class="absolute -top-px -left-px w-6 h-6 border-t-[3px] border-l-[3px] border-brand-600 rounded-tl-2xl"></span>
-                        <span class="absolute -top-px -right-px w-6 h-6 border-t-[3px] border-r-[3px] border-brand-600 rounded-tr-2xl"></span>
-                        <span class="absolute -bottom-px -left-px w-6 h-6 border-b-[3px] border-l-[3px] border-brand-600 rounded-bl-2xl"></span>
-                        <span class="absolute -bottom-px -right-px w-6 h-6 border-b-[3px] border-r-[3px] border-brand-600 rounded-br-2xl"></span>
+                    {{-- High Contrast QR Code with Neon Glowing Border --}}
+                    <div class="relative mx-auto mt-5 p-3 rounded-2xl bg-white shadow-2xl border-2 border-[#38bdf8]/40 shadow-[#38bdf8]/20">
+                        <span class="absolute -top-1 -left-1 w-6 h-6 border-t-2 border-l-2 border-[#38bdf8] rounded-tl-xl"></span>
+                        <span class="absolute -top-1 -right-1 w-6 h-6 border-t-2 border-r-2 border-[#38bdf8] rounded-tr-xl"></span>
+                        <span class="absolute -bottom-1 -left-1 w-6 h-6 border-b-2 border-l-2 border-[#38bdf8] rounded-bl-xl"></span>
+                        <span class="absolute -bottom-1 -right-1 w-6 h-6 border-b-2 border-r-2 border-[#38bdf8] rounded-br-xl"></span>
                         <img src="{{ route('pay.qr', $order) }}" alt="UPI QR code for ₹{{ $amount }}" class="w-52 h-52 sm:w-56 sm:h-56">
                     </div>
 
+                    {{-- UPI App Deep Links --}}
                     <div class="mt-5 flex flex-wrap justify-center gap-2">
                         @foreach ($apps as [$name, $scheme, $color, $logo])
-                            <span class="rounded-full bg-slate-50 ring-1 ring-slate-200 px-3 py-1 text-xs font-bold {{ $color }} flex items-center gap-1.5">
+                            <a href="{{ $order->upiIntentUrl($scheme) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#17171f] border border-white/10 hover:border-[#38bdf8] transition-all text-xs font-semibold text-white shadow-sm hover:shadow-[#38bdf8]/20">
                                 <img src="{{ asset($logo) }}" class="w-4 h-4 rounded-sm" alt="{{ $name }}">{{ $name }}
-                            </span>
+                            </a>
                         @endforeach
                     </div>
 
-                    {{-- On phones, open the UPI app directly --}}
-                    <div class="md:hidden mt-6 space-y-3">
-                        <div class="flex items-center gap-3 text-xs text-slate-400"><span class="h-px flex-1 bg-slate-200"></span>OR PAY ON THIS PHONE<span class="h-px flex-1 bg-slate-200"></span></div>
-                        <a href="{{ $order->upiIntentUrl() }}" class="btn btn-primary btn-lg w-full"><x-icon name="phone" class="w-5 h-5" /> Pay ₹{{ $amount }} with UPI app</a>
-                        <div class="grid grid-cols-3 gap-2">
-                            @foreach (array_slice($apps, 0, 3) as [$name, $scheme, $color, $logo])
-                                <a href="{{ $order->upiIntentUrl($scheme) }}" class="btn btn-secondary font-bold {{ $color }} flex items-center justify-center gap-1.5">
-                                    <img src="{{ asset($logo) }}" class="w-5 h-5 rounded-sm" alt="{{ $name }}">{{ $name }}
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <div class="mt-6 flex items-center justify-between gap-3 rounded-xl bg-slate-50 ring-1 ring-slate-200 px-4 py-3">
+                    {{-- Direct UPI ID Copy Row --}}
+                    <div class="mt-4 flex items-center justify-between gap-3 rounded-xl bg-[#17171f] border border-white/10 px-4 py-2.5">
                         <div class="min-w-0">
-                            <div class="text-xs text-slate-500">Or pay to UPI ID</div>
-                            <div class="font-mono text-sm font-medium text-slate-900 truncate">{{ $order->paymentAccount->upi_id }}</div>
+                            <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Direct VPA</div>
+                            <div class="font-mono text-xs font-semibold text-[#38bdf8] truncate">{{ $order->paymentAccount->upi_id }}</div>
                         </div>
                         <x-copy :text="$order->paymentAccount->upi_id" />
                     </div>
 
+                    {{-- Optional Manual UTR form --}}
                     @if ($order->acceptsCustomerUtr())
                         @include('pay._utr-form', ['class' => 'mt-4'])
                     @endif
 
-                    <div class="mt-auto pt-6">
-                        <div class="flex items-center justify-center gap-2.5 rounded-xl bg-amber-50 ring-1 ring-amber-200 px-4 py-3 text-sm text-amber-800">
-                            <svg class="w-4 h-4 animate-spin text-amber-600" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".25" stroke-width="3"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
-                            <span id="status-text">{{ $order->acceptsCustomerUtr() ? 'After paying, submit your UTR above' : 'Waiting for payment…' }}</span>
+                    {{-- Live Polling Status Indicator --}}
+                    <div class="mt-5 pt-4 border-t border-white/10">
+                        <div class="flex items-center justify-center gap-2.5 rounded-xl bg-[#17171f] border border-white/10 px-4 py-2.5 text-xs text-slate-300">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#38bdf8] opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-[#38bdf8]"></span>
+                            </span>
+                            <span id="status-text">{{ $order->acceptsCustomerUtr() ? 'After paying, enter your 12-digit UTR below' : 'Awaiting payment confirmation…' }}</span>
                         </div>
-                        <p class="mt-2 text-center text-xs text-slate-400">Please don't close or refresh this page after paying.</p>
+                        <p class="mt-2 text-center text-[11px] text-slate-500">Do not refresh or close while paying.</p>
                     </div>
                 @endif
             </div>
         </div>
     </div>
 
-    <footer class="pb-6 flex flex-col items-center gap-2 text-xs text-slate-400">
-        <div class="flex items-center gap-1.5"><x-icon name="lock" class="w-3.5 h-3.5" /> Secured by <span class="font-semibold text-slate-500">{{ config('app.name') }}</span></div>
-        <div>Payments go directly to the merchant's bank account via UPI.</div>
+    {{-- Clean Footer --}}
+    <footer class="py-4 flex flex-col items-center gap-1.5 text-xs text-slate-500">
+        <div class="flex items-center gap-1.5"><x-icon name="lock" class="w-3.5 h-3.5 text-[#38bdf8]" /> Secured by <span class="font-semibold text-slate-300">{{ config('app.name') }}</span></div>
+        <div class="text-[11px]">Direct peer-to-peer UPI transfer to merchant bank account.</div>
     </footer>
 </div>
 @endsection
@@ -246,11 +223,10 @@
         const left = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
         const display = String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0');
         const offset = (100.5 * (1 - left / total)).toFixed(2);
-        const stroke = left < 60 ? '#f87171' : '#818cf8';
+        const stroke = left < 60 ? '#f87171' : '#38bdf8';
         timer.textContent = display;
         ring.style.strokeDashoffset = offset;
         ring.style.stroke = stroke;
-        // Hosted-PG secondary timer widget (different IDs to avoid duplicate-id)
         const timerPg = document.getElementById('timer-pg');
         const ringPg  = document.getElementById('ring-pg');
         if (timerPg) timerPg.textContent = display;

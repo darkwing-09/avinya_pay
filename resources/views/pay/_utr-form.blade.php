@@ -1,19 +1,19 @@
 @php $left = \App\Models\Order::MAX_UTR_ATTEMPTS - $order->utr_attempts; @endphp
-<form method="POST" action="{{ route('pay.utr', $order) }}" class="rounded-xl ring-1 ring-slate-200 p-4 text-left {{ $class ?? '' }}">
+<form method="POST" action="{{ route('pay.utr', $order) }}" class="rounded-xl bg-[#17171f] border border-white/10 p-4 text-left {{ $class ?? '' }}">
     @csrf
     @if ($order->review_note)
-        <div class="mb-3 flex items-start gap-2 rounded-lg bg-red-50 ring-1 ring-red-200 px-3 py-2 text-xs text-red-700">
-            <x-icon name="alert" class="w-4 h-4 mt-px" />
-            <div><b>Couldn't verify your last UTR.</b> {{ $order->review_note }} Please check the 12-digit UTR in your UPI app and try again.</div>
+        <div class="mb-3 flex items-start gap-2 rounded-lg bg-red-500/10 border border-red-500/20 px-3 py-2 text-xs text-red-400">
+            <x-icon name="alert" class="w-4 h-4 mt-px text-red-400" />
+            <div><b>Couldn't verify your last UTR.</b> {{ $order->review_note }} Please re-check the 12-digit UTR in your UPI app.</div>
         </div>
     @endif
-    <label for="utr" class="text-sm font-semibold text-slate-900">Already paid? Enter your UTR</label>
-    <p class="text-xs text-slate-500 mt-0.5 mb-3">Find the 12-digit <b>UTR / UPI Ref. No.</b> in your UPI app's transaction details.</p>
+    <label for="utr" class="text-xs font-semibold text-white">Already paid? Enter 12-digit UTR</label>
+    <p class="text-[11px] text-slate-400 mt-0.5 mb-2.5">Find the <b>UTR / UPI Ref. No.</b> in your transaction details.</p>
     <div class="flex gap-2">
         <input id="utr" name="utr" inputmode="numeric" autocomplete="off" maxlength="14" required value="{{ old('utr') }}"
-            placeholder="e.g. 412345678901" @class(['input font-mono tracking-wider', 'ring-red-400 focus:ring-red-500' => $errors->has('utr')])>
-        <button class="btn btn-dark shrink-0">Submit</button>
+            placeholder="e.g. 412345678901" @class(['w-full rounded-lg bg-[#07070a] border border-white/10 px-3 py-2 text-xs font-mono tracking-wider text-white placeholder:text-slate-500 focus:outline-none focus:border-[#38bdf8] focus:ring-1 focus:ring-[#38bdf8]', 'border-red-500 focus:border-red-500 focus:ring-red-500' => $errors->has('utr')])>
+        <button class="gocrazy-btn px-4 py-2 rounded-lg text-xs font-bold shrink-0">Submit</button>
     </div>
-    @error('utr')<p class="mt-1.5 flex items-start gap-1.5 text-xs text-red-600"><x-icon name="alert" class="mt-px w-3.5 h-3.5" /> <span>{{ $message }}</span></p>@enderror
-    <p class="mt-2 text-[11px] text-slate-400">{{ $left }} {{ Str::plural('attempt', $left) }} left. The merchant confirms this UTR against their bank account before your order is marked paid.</p>
+    @error('utr')<p class="mt-1.5 flex items-start gap-1.5 text-xs text-red-400"><x-icon name="alert" class="mt-px w-3.5 h-3.5" /> <span>{{ $message }}</span></p>@enderror
+    <p class="mt-2 text-[10px] text-slate-500">{{ $left }} {{ Str::plural('attempt', $left) }} left.</p>
 </form>
