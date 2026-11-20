@@ -49,9 +49,11 @@ if ! grep -q "^APP_KEY=base64:" /var/www/html/.env; then
     php artisan key:generate --force || true
 fi
 
-# If remote DB_HOST is set, mark installation complete
-if [ -n "$DB_HOST" ] && [ "$DB_HOST" != "127.0.0.1" ]; then
+# If remote DB_HOST is set, mark installation complete and run pending migrations
+if [ -n "$DB_HOST" ]; then
     touch /var/www/html/storage/installed
+    echo "Running database migrations..."
+    php artisan migrate --force || echo "Migration step failed or skipped."
 fi
 
 chown www-data:www-data /var/www/html/.env /var/www/html/storage/installed 2>/dev/null || true

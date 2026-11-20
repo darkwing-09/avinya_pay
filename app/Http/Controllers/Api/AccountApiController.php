@@ -27,19 +27,28 @@ class AccountApiController extends Controller
             ]);
         }
 
-        $accounts = $merchant->paymentAccounts()->withUsageToday()->oldest()->get()
-            ->map(fn (PaymentAccount $a) => [
-                'id' => $a->id,
-                'label' => $a->label,
-                'upi_id' => $a->upi_id,
-                'provider' => $a->provider,
-                'is_active' => $a->is_active,
-                'is_default' => $a->is_default,
-                'daily_limit' => $a->daily_limit,
-                'used_today' => number_format($a->usedToday(), 2, '.', ''),
-                'remaining_today' => $a->remainingToday() === null ? null : number_format($a->remainingToday(), 2, '.', ''),
-            ]);
+        try {
+            $accounts = $merchant->paymentAccounts()->withUsageToday()->oldest()->get()
+                ->map(fn (PaymentAccount $a) => [
+                    'id' => $a->id,
+                    'label' => $a->label,
+                    'upi_id' => $a->upi_id,
+                    'provider' => $a->provider,
+                    'is_active' => $a->is_active,
+                    'is_default' => $a->is_default,
+                    'daily_limit' => $a->daily_limit,
+                    'used_today' => number_format($a->usedToday(), 2, '.', ''),
+                    'remaining_today' => $a->remainingToday() === null ? null : number_format($a->remainingToday(), 2, '.', ''),
+                ]);
 
-        return response()->json(['success' => true, 'environment' => Order::LIVE, 'rotation_mode' => $merchant->rotation_mode, 'data' => $accounts]);
+            return response()->json(['success' => true, 'environment' => Order::LIVE, 'rotation_mode' => $merchant->rotation_mode, 'data' => $accounts]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'class' => get_class($e),
+                'file' => $e->getFile() . ':' . $e->getLine(),
+            ], 500);
+        }
     }
 }

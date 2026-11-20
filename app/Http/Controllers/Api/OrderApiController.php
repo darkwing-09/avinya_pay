@@ -40,9 +40,20 @@ class OrderApiController extends Controller
             $this->validateRedirectUrl($merchant, $data['redirect_url']);
         }
 
-        $order = $this->orders->create($merchant, $data, $environment);
+        try {
+            $order = $this->orders->create($merchant, $data, $environment);
 
-        return response()->json(['success' => true, 'data' => $order->toApiArray()], 201);
+            return response()->json(['success' => true, 'data' => $order->toApiArray()], 201);
+        } catch (\Illuminate\Validation\ValidationException $ve) {
+            throw $ve;
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'class' => get_class($e),
+                'file' => $e->getFile() . ':' . $e->getLine(),
+            ], 500);
+        }
     }
 
     /**
