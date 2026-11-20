@@ -19,9 +19,11 @@ class PaymentAgentController extends Controller
     public function ingest(Request $request): JsonResponse
     {
         $data = $request->validate([
+            'raw_text' => ['nullable', 'string'],
             'text' => ['nullable', 'string'],
             'body' => ['nullable', 'string'],
             'snippet' => ['nullable', 'string'],
+            'message' => ['nullable', 'string'],
             'source' => ['nullable', 'string', 'in:gmail,notification,sms,webhook'],
             'sender' => ['nullable', 'string', 'max:150'],
             'amount' => ['nullable', 'numeric'],
@@ -29,7 +31,7 @@ class PaymentAgentController extends Controller
             'order_id' => ['nullable', 'string', 'max:40'],
         ]);
 
-        $rawText = $data['text'] ?? $data['body'] ?? $data['snippet'] ?? '';
+        $rawText = $data['raw_text'] ?? $data['text'] ?? $data['body'] ?? $data['snippet'] ?? $data['message'] ?? '';
         if (empty($rawText)) {
             $rawText = 'Payment: ' . ($data['amount'] ?? '') . ' UTR: ' . ($data['utr'] ?? '') . ' Order: ' . ($data['order_id'] ?? '');
         }
