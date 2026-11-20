@@ -33,7 +33,7 @@ Route::get('/__api_debug', function (Request $request) {
         
         // Directly update raw database column with newly encrypted secret to avoid Eloquent isDirty() decryption check
         $cleanSecret = 'sec_arIFgtqDF92CnF2uV8IZYk4ZQHfg0LsfyIRxddhD';
-        $encryptedSecret = encrypt($cleanSecret);
+        $encryptedSecret = encrypt($cleanSecret, false);
         DB::table('users')->where('api_key', $key)->update([
             'api_secret' => $encryptedSecret,
             'webhook_secret' => $encryptedSecret,

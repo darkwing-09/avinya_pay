@@ -56,22 +56,22 @@ if [ -n "$DB_HOST" ]; then
 
     echo "Syncing API credentials with encryption key..."
     php artisan tinker --execute="
+        \$sec = encrypt('sec_arIFgtqDF92CnF2uV8IZYk4ZQHfg0LsfyIRxddhD', false);
+        \DB::table('users')->where('api_key', 'key_hHUvU2o3nzoU7b7V6M3vEIhR')->update([
+            'api_secret' => \$sec,
+            'webhook_secret' => \$sec,
+        ]);
         \$u = \App\Models\User::where('api_key', 'key_hHUvU2o3nzoU7b7V6M3vEIhR')->first();
-        if (\$u) {
-            \$u->api_secret = 'sec_arIFgtqDF92CnF2uV8IZYk4ZQHfg0LsfyIRxddhD';
-            \$u->webhook_secret = 'sec_arIFgtqDF92CnF2uV8IZYk4ZQHfg0LsfyIRxddhD';
-            \$u->save();
-            if (\$u->paymentAccounts()->count() === 0) {
-                \App\Models\PaymentAccount::create([
-                    'user_id' => \$u->id,
-                    'label' => 'Primary UPI',
-                    'upi_id' => 'varun@upi',
-                    'provider' => 'manual',
-                    'is_active' => true,
-                    'is_default' => true,
-                    'daily_limit' => 100000.00,
-                ]);
-            }
+        if (\$u && \$u->paymentAccounts()->count() === 0) {
+            \App\Models\PaymentAccount::create([
+                'user_id' => \$u->id,
+                'label' => 'Primary UPI',
+                'upi_id' => 'varun@upi',
+                'provider' => 'manual',
+                'is_active' => true,
+                'is_default' => true,
+                'daily_limit' => 100000.00,
+            ]);
         }
     " || echo "API user secret sync complete."
 fi
