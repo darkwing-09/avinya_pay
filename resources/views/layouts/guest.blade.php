@@ -1,9 +1,9 @@
 @extends('layouts.base')
 
 @section('body')
-<div class="min-h-full grid lg:grid-cols-2 bg-[#07070a]">
+<div class="min-h-full grid lg:grid-cols-2 bg-transparent">
     {{-- Brand panel --}}
-    <div class="relative hidden lg:flex flex-col justify-between overflow-hidden bg-[#0a0a0f] p-12 text-white border-r border-white/10">
+    <div class="relative hidden lg:flex flex-col justify-between overflow-hidden bg-[#0a0a0f]/85 backdrop-blur-xl p-12 text-white border-r border-white/10">
         <div class="absolute inset-0 opacity-40" style="background: radial-gradient(600px circle at 20% 20%, rgba(56, 189, 248, 0.25), transparent 60%), radial-gradient(500px circle at 90% 80%, rgba(56, 189, 248, 0.15), transparent 60%);"></div>
         <div class="absolute inset-0 opacity-[0.05]" style="background-image: linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px); background-size: 40px 40px;"></div>
 
@@ -23,7 +23,7 @@
     </div>
 
     {{-- Form Container --}}
-    <div class="flex flex-col justify-center px-6 py-12 sm:px-12 bg-[#07070a]">
+    <div class="flex flex-col justify-center px-6 py-12 sm:px-12 bg-transparent">
         <div class="w-full max-w-sm mx-auto">
             <a href="{{ route('home') }}" class="lg:hidden inline-block mb-10"><x-logo /></a>
             <h1 class="text-2xl font-bold tracking-tight text-white">@yield('title')</h1>

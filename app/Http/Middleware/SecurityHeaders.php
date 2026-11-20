@@ -34,9 +34,10 @@ class SecurityHeaders
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Per-request nonce for the Paytm PG form auto-submit script.
+        // Per-request nonce for scripts and Vite bundles.
         $nonce = base64_encode(random_bytes(16));
         view()->share('csp_nonce', $nonce);
+        \Illuminate\Support\Facades\Vite::useCspNonce($nonce);
 
         $response = $next($request);
 

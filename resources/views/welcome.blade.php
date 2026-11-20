@@ -2,11 +2,11 @@
 @section('title', 'Accept UPI payments directly in your bank account')
 
 @section('body')
-<div class="bg-[#07070a] text-[#fafafc]">
+<div class="min-h-full gocrazy-bg text-[#fafafc]">
     @include('layouts.public-nav')
 
     {{-- Hero --}}
-    <section class="relative overflow-hidden bg-[#07070a]">
+    <section class="relative overflow-hidden bg-transparent">
         <div class="absolute inset-0 -z-0" style="background: radial-gradient(900px circle at 80% -10%, rgb(99 102 241 / .13), transparent 55%), radial-gradient(600px circle at 5% 100%, rgb(14 165 233 / .09), transparent 55%);"></div>
         <div class="absolute top-16 right-0 w-80 h-80 bg-brand-100/30 rounded-full blur-3xl -z-0 pointer-events-none"></div>
         <div class="absolute bottom-0 left-0 w-64 h-64 bg-sky-100/30 rounded-full blur-3xl -z-0 pointer-events-none"></div>
@@ -89,7 +89,7 @@
     </section>
 
     {{-- Stats --}}
-    <section class="border-y border-white/10 bg-[#101016] py-12">
+    <section class="border-y border-white/10 bg-[#101016]/80 backdrop-blur-md py-12">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
                 @foreach ([
@@ -108,7 +108,7 @@
     </section>
 
     {{-- Integrations strip --}}
-    <section class="bg-[#07070a] py-10 border-b border-white/10">
+    <section class="bg-transparent py-10 border-b border-white/10">
         <div class="mx-auto max-w-6xl px-4 sm:px-6 text-center">
             <p class="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-6">Works with all major UPI apps</p>
             <div class="flex flex-wrap justify-center items-center gap-6">
@@ -159,7 +159,7 @@
     </section>
 
     {{-- Comparison --}}
-    <section class="py-20 lg:py-24 bg-[#07070a] border-b border-white/10">
+    <section class="py-20 lg:py-24 bg-transparent border-b border-white/10">
         <div class="mx-auto max-w-4xl px-4 sm:px-6">
             <div class="text-center mb-12">
                 <div class="text-sm font-semibold text-brand-600">Why choose us</div>

@@ -23,12 +23,12 @@
         ];
     }
 @endphp
-<div class="min-h-full bg-[#07070a] text-[#fafafc]">
+<div class="min-h-full bg-transparent text-[#fafafc]">
     {{-- Ambient Top Glow --}}
     <div class="fixed top-0 inset-x-0 h-96 pointer-events-none -z-10" style="background: radial-gradient(50% 80% at 50% 0%, rgba(56, 189, 248, 0.12), transparent 75%);"></div>
 
     {{-- Mobile top bar --}}
-    <div class="lg:hidden sticky top-0 z-30 flex items-center justify-between bg-[#0a0a0f]/90 backdrop-blur border-b border-white/10 px-4 h-14">
+    <div class="lg:hidden sticky top-0 z-30 flex items-center justify-between bg-[#0a0a0f]/90 backdrop-blur-xl/90 backdrop-blur border-b border-white/10 px-4 h-14">
         <a href="{{ route('dashboard') }}"><x-logo /></a>
         <button type="button" data-sidebar-toggle class="btn btn-ghost p-2" aria-label="Open menu">
             <x-icon name="menu" class="w-6 h-6 text-slate-300" />
@@ -37,7 +37,7 @@
     <div id="backdrop" data-sidebar-close class="hidden lg:hidden fixed inset-0 z-30 bg-black/60 backdrop-blur-sm"></div>
 
     {{-- Sidebar --}}
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 -translate-x-full lg:translate-x-0 transition-transform bg-[#0a0a0f] border-r border-white/10 flex flex-col">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 -translate-x-full lg:translate-x-0 transition-transform bg-[#0a0a0f]/90 backdrop-blur-xl border-r border-white/10 flex flex-col">
         <div class="h-16 flex items-center px-5 border-b border-white/10">
             <a href="{{ route('dashboard') }}"><x-logo /></a>
         </div>
