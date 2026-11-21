@@ -16,10 +16,12 @@ import json
 import time
 import os
 import sys
+import re
 import urllib.request
 import urllib.error
 
 AVINYAPAY_URL = os.environ.get("AVINYAPAY_URL", "https://avinyapay.onrender.com")
+GOCRAZY_URL = os.environ.get("GOCRAZY_URL", "https://gocrazzyy.vercel.app")
 GMAIL_USER = os.environ.get("GMAIL_USER", "rootlinux09@gmail.com")
 GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD", "scrcgsfhyiydpfmh")
 
@@ -134,6 +136,18 @@ def check_gmail_fast(mail, processed_ids):
                 if res and res.get("ok"):
                     processed_ids.add(mid_str)
                     save_processed(processed_ids)
+
+                    # Instantly reconcile with GoCrazy so listing is immediate even if customer leaves checkout
+                    ord_match = re.search(r'(ORD[A-Z0-9]+)', full_text)
+                    if ord_match:
+                        ord_id = ord_match.group(1)
+                        try:
+                            time.sleep(0.5)
+                            req = urllib.request.Request(f"{GOCRAZY_URL}/api/payments/status/{ord_id}")
+                            with urllib.request.urlopen(req, timeout=10) as gc_res:
+                                print(f"[{time.strftime('%X')}] 🚀 Notified GoCrazy directly for {ord_id}: code={gc_res.status}")
+                        except Exception as ge:
+                            print(f"[{time.strftime('%X')}] GoCrazy notify notice: {ge}")
 
     except (imaplib.IMAP4.abort, imaplib.IMAP4.error):
         raise

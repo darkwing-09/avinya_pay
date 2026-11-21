@@ -57,12 +57,14 @@ class WebhookOutboxDispatcher
         }
 
         try {
-            if (config('queue.connections.'.config('queue.default').'.driver') === 'null') {
-                throw new RuntimeException('The null queue cannot accept durable webhooks.');
+            // Attempt immediate synchronous delivery so webhooks don't get stuck without a worker
+            try {
+                (new SendWebhook($event->order, $event->event, $event->event_id, $event->dispatch_attempts))->handle();
+            } catch (Throwable $directErr) {
+                Log::info('Direct webhook delivery fallback to queue: ' . $directErr->getMessage());
+                Queue::push((new SendWebhook($event->order, $event->event, $event->event_id, $event->dispatch_attempts))->beforeCommit());
             }
-            // Queue insertion is immediate here, never a deferred PendingDispatch.
-            // No database row locks are held during publication.
-            Queue::push((new SendWebhook($event->order, $event->event, $event->event_id, $event->dispatch_attempts))->beforeCommit());
+
             WebhookOutbox::whereKey($id)->where('claim_token', $token)->whereNull('delivered_at')
                 ->whereIn('status', ['pending', 'queued', 'failed'])->update([
                     'status' => 'queued', 'queued_at' => now(), 'claim_token' => null, 'claimed_at' => null,

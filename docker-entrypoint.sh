@@ -69,6 +69,7 @@ if [ -n "$DB_HOST" ]; then
         \DB::table('users')->where('api_key', 'key_hHUvU2o3nzoU7b7V6M3vEIhR')->update([
             'api_secret' => \$sec,
             'webhook_secret' => \$sec,
+            'webhook_url' => 'https://gocrazzyy.vercel.app/api/webhooks/upi',
         ]);
         \$creds = encrypt(json_encode(['mid' => '281005050101cjehi3txn84r']), false);
         \DB::table('payment_accounts')->where('id', 1)->update([

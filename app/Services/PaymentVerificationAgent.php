@@ -185,6 +185,11 @@ class PaymentVerificationAgent
 
                 Log::info("Order {$locked->order_no} verified and marked PAID via matched signal #{$signal->id}");
                 app(WebhookOutboxService::class)->record($locked->refresh(), 'order.paid');
+                try {
+                    app(\App\Services\WebhookOutboxDispatcher::class)->dispatchDue();
+                } catch (\Throwable $e) {
+                    Log::warning("Immediate webhook dispatch error: " . $e->getMessage());
+                }
             } else {
                 // Defense 4: No matching bank signal yet -> strictly hold in REVIEW (NEVER mark PAID!)
                 $locked->update([
@@ -261,6 +266,11 @@ class PaymentVerificationAgent
             Log::info("Order {$locked->order_no} marked PAID from signal #{$signal->id} ({$signal->source}) with Order ID {$signal->order_id}");
 
             app(WebhookOutboxService::class)->record($locked->refresh(), 'order.paid');
+            try {
+                app(\App\Services\WebhookOutboxDispatcher::class)->dispatchDue();
+            } catch (\Throwable $e) {
+                Log::warning("Immediate webhook dispatch error: " . $e->getMessage());
+            }
 
             return $locked->refresh();
         });
