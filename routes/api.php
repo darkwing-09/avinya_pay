@@ -23,4 +23,5 @@ Route::prefix('v1')->middleware(['api.key'])->group(function () {
     Route::post('agent/signal', [PaymentAgentController::class, 'ingest']);
     Route::get('agent/signals', [PaymentAgentController::class, 'listSignals']);
     Route::post('agent/verify-order/{orderNo}', [PaymentAgentController::class, 'verifyOrder']);
+    Route::post('agent/cleanup-expired', [PaymentAgentController::class, 'cleanupExpired']);
 });

@@ -14,6 +14,23 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $environment = $request->query('environment') === Order::SANDBOX ? Order::SANDBOX : Order::LIVE;
+
+        // Auto-purge all expired orders & expired pending checkouts
+        $expiredIds = $request->user()->orders()->where('environment', $environment)->where(function ($q) {
+            $q->where('status', Order::EXPIRED)
+              ->orWhere(function ($sub) {
+                  $sub->where('status', Order::PENDING)
+                      ->where('expires_at', '<', now());
+              });
+        })->pluck('id');
+
+        if ($expiredIds->isNotEmpty()) {
+            \DB::table('webhook_outbox')->whereIn('order_id', $expiredIds)->delete();
+            \DB::table('webhook_logs')->whereIn('order_id', $expiredIds)->delete();
+            \DB::table('payment_signals')->whereIn('matched_order_id', $expiredIds)->update(['matched_order_id' => null]);
+            Order::whereIn('id', $expiredIds)->delete();
+        }
+
         $query = $request->user()->orders()->where('environment', $environment)->with('paymentAccount')->latest();
 
         if ($status = $request->query('status')) {

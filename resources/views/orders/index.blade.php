@@ -15,7 +15,7 @@
 @endif
 @php
     $current = request('status', '');
-    $tabs = ['' => ['All', $counts->sum()], 'paid' => ['Paid', $counts['paid'] ?? 0], 'review' => ['Needs review', $counts['review'] ?? 0], 'pending' => ['Pending', $counts['pending'] ?? 0], 'failed' => ['Failed', $counts['failed'] ?? 0], 'expired' => ['Expired', $counts['expired'] ?? 0]];
+    $tabs = ['' => ['All', $counts->sum()], 'paid' => ['Paid', $counts['paid'] ?? 0], 'review' => ['Needs review', $counts['review'] ?? 0], 'pending' => ['Pending', $counts['pending'] ?? 0]];
 @endphp
 <div class="card overflow-hidden bg-[#101016]/95 border border-white/10 shadow-lg">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 px-5 py-3 border-b border-white/10">

@@ -125,4 +125,34 @@ class PaymentAgentController extends Controller
             'matched_signal' => $signal ? $signal->id : null,
         ]);
     }
+
+    /**
+     * Purge all expired orders and expired pending checkouts.
+     */
+    public function cleanupExpired(Request $request): JsonResponse
+    {
+        $expiredQuery = Order::where(function ($q) {
+            $q->where('status', Order::EXPIRED)
+              ->orWhere(function ($sub) {
+                  $sub->where('status', Order::PENDING)
+                      ->where('expires_at', '<', now());
+              });
+        });
+
+        $expiredIds = $expiredQuery->pluck('id');
+        $deletedCount = $expiredIds->count();
+
+        if ($deletedCount > 0) {
+            \DB::table('webhook_outbox')->whereIn('order_id', $expiredIds)->delete();
+            \DB::table('webhook_logs')->whereIn('order_id', $expiredIds)->delete();
+            \DB::table('payment_signals')->whereIn('matched_order_id', $expiredIds)->update(['matched_order_id' => null]);
+            Order::whereIn('id', $expiredIds)->delete();
+        }
+
+        return response()->json([
+            'ok' => true,
+            'deleted_expired_orders' => $deletedCount,
+            'message' => "Successfully removed {$deletedCount} expired orders.",
+        ]);
+    }
 }

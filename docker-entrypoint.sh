@@ -91,6 +91,20 @@ if [ -n "$DB_HOST" ]; then
     " || echo "API user secret sync complete."
 fi
 
+# Clean up expired orders and stale checkouts unconditionally
+php artisan tinker --execute="
+    \$expired = \App\Models\Order::where('status', 'expired')->orWhere(function (\$q) {
+        \$q->where('status', 'pending')->where('expires_at', '<', now());
+    })->pluck('id');
+    if (\$expired->isNotEmpty()) {
+        \DB::table('webhook_outbox')->whereIn('order_id', \$expired)->delete();
+        \DB::table('webhook_logs')->whereIn('order_id', \$expired)->delete();
+        \DB::table('payment_signals')->whereIn('matched_order_id', \$expired)->update(['matched_order_id' => null]);
+        \App\Models\Order::whereIn('id', \$expired)->delete();
+        echo 'Purged ' . \$expired->count() . ' expired orders.' . PHP_EOL;
+    }
+" 2>/dev/null || true
+
 chown www-data:www-data /var/www/html/.env /var/www/html/storage/installed 2>/dev/null || true
 chmod 664 /var/www/html/.env /var/www/html/storage/installed 2>/dev/null || true
 
