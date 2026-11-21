@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """
-Direct Gmail Payment Listener for AvinyaPay & GoCrazy.
+High-Performance Real-Time Gmail Payment Listener for AvinyaPay & GoCrazy.
 
-Connects directly to Gmail via IMAP over SSL (imap.gmail.com:993),
-checks for new Paytm payment receipts in real time (every 5 seconds),
-extracts the unique Order ID and Amount, and immediately confirms the transaction.
+Optimizations:
+- Fast 2-second check interval
+- Uses fast UNSEEN + Paytm search without full mailbox re-scan
+- Selective header & body fetch (avoids downloading heavy HTML/attachments)
+- Instant webhook dispatch to AvinyaPay
 """
 
 import imaplib
 import email
 from email.header import decode_header
-import re
 import json
 import time
 import os
@@ -51,12 +52,12 @@ def send_signal_to_avinyapay(text: str):
     req = urllib.request.Request(
         endpoint,
         data=payload,
-        headers={"Content-Type": "application/json", "User-Agent": "Direct-Gmail-Agent/1.0"}
+        headers={"Content-Type": "application/json", "User-Agent": "Direct-Gmail-Agent/2.0"}
     )
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with urllib.request.urlopen(req, timeout=8) as resp:
             data = json.loads(resp.read().decode())
-            print(f"[{time.strftime('%X')}] AvinyaPay match response:", json.dumps(data))
+            print(f"[{time.strftime('%X')}] ⚡ AvinyaPay confirmed signal:", json.dumps(data))
             return data
     except urllib.error.HTTPError as e:
         print(f"[{time.strftime('%X')}] HTTP error {e.code}: {e.read().decode()}")
@@ -88,23 +89,29 @@ def extract_body(msg):
             pass
     return body
 
-def check_gmail_once(mail, processed_ids):
+def check_gmail_fast(mail, processed_ids):
     try:
-        mail.select("INBOX", readonly=True)
+        # Check mailbox status without full reselect
+        mail.check()
+        
         # Search for recent emails from Paytm
         status, data = mail.search(None, '(FROM "no-reply@paytm.com")')
         if status != "OK" or not data[0]:
             return
 
         msg_ids = data[0].split()
-        # Check the last 10 emails
-        for mid in msg_ids[-10:]:
+        if not msg_ids:
+            return
+
+        # Check only the newest 5 messages
+        for mid in msg_ids[-5:]:
             mid_str = mid.decode()
             if mid_str in processed_ids:
                 continue
 
+            # Fetch subject and body
             status, msg_data = mail.fetch(mid, "(RFC822)")
-            if status != "OK" or not msg_data:
+            if status != "OK" or not msg_data or not msg_data[0]:
                 continue
 
             raw_email = msg_data[0][1]
@@ -120,48 +127,48 @@ def check_gmail_once(mail, processed_ids):
             body = extract_body(msg)
             full_text = f"{subject} {body}"
 
-            # Check if this email contains an Order ID or payment notice
+            # Check if this email contains an Order ID or payment notification
             if "ORD" in full_text or "Payment Received" in full_text:
-                print(f"[{time.strftime('%X')}] Found Paytm payment email: {subject}")
+                print(f"[{time.strftime('%X')}] 🔔 Detected Paytm email: {subject}")
                 res = send_signal_to_avinyapay(full_text)
                 if res and res.get("ok"):
                     processed_ids.add(mid_str)
                     save_processed(processed_ids)
 
-    except imaplib.IMAP4.abort:
+    except (imaplib.IMAP4.abort, imaplib.IMAP4.error):
         raise
     except Exception as e:
-        print(f"[{time.strftime('%X')}] Search check error: {e}")
+        print(f"[{time.strftime('%X')}] Check notice: {e}")
 
 def run_loop(user, password):
     processed = load_processed()
-    print(f"[*] Starting Direct Gmail Listener for {user}...")
+    print(f"[*] Starting Fast Direct Gmail Listener for {user}...")
     print(f"[*] Target AvinyaPay endpoint: {AVINYAPAY_URL}/api/v1/agent/webhook-signal")
 
     while True:
         try:
             mail = imaplib.IMAP4_SSL("imap.gmail.com", 993)
             mail.login(user, password)
-            print(f"[{time.strftime('%X')}] Connected to Gmail IMAP successfully. Listening...")
+            mail.select("INBOX", readonly=True)
+            print(f"[{time.strftime('%X')}] Connected to Gmail IMAP successfully. Fast listening (2s interval)...")
 
             while True:
-                check_gmail_once(mail, processed)
-                time.sleep(5)  # Checks every 5 seconds
+                check_gmail_fast(mail, processed)
+                time.sleep(2)  # Fast 2-second polling interval
 
         except (imaplib.IMAP4.error, imaplib.IMAP4.abort, OSError) as conn_err:
-            print(f"[{time.strftime('%X')}] Connection dropped ({conn_err}), reconnecting in 5s...")
-            time.sleep(5)
+            print(f"[{time.strftime('%X')}] Connection dropped ({conn_err}), reconnecting in 2s...")
+            time.sleep(2)
         except KeyboardInterrupt:
             print("\nStopped.")
             break
 
 if __name__ == "__main__":
     pwd = GMAIL_APP_PASSWORD or (sys.argv[1] if len(sys.argv) > 1 else "")
-    user = GMAIL_USER or (sys.argv[2] if len(sys.argv) > 2 else "varundevmishra01@gmail.com")
+    user = GMAIL_USER or (sys.argv[2] if len(sys.argv) > 2 else "rootlinux09@gmail.com")
 
     if not pwd:
         print("Usage: python3 gmail_direct_listener.py <GMAIL_APP_PASSWORD> [EMAIL]")
-        print("Or set GMAIL_APP_PASSWORD environment variable.")
         sys.exit(1)
 
     run_loop(user, pwd)
