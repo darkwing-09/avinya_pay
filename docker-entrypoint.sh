@@ -119,4 +119,10 @@ php artisan tinker --execute="
 chown www-data:www-data /var/www/html/.env /var/www/html/storage/installed 2>/dev/null || true
 chmod 664 /var/www/html/.env /var/www/html/storage/installed 2>/dev/null || true
 
+# Start continuous 24/7 background Gmail payment listener inside Render container
+if [ -z "$DISABLE_GMAIL_LISTENER" ]; then
+    echo "Starting continuous 24/7 Gmail payment listener..."
+    nohup php /var/www/html/artisan gmail:listen --interval=2 > /var/www/html/storage/logs/gmail_worker.log 2>&1 &
+fi
+
 exec "$@"
