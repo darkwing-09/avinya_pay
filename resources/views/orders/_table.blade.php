@@ -4,41 +4,41 @@
     </x-empty>
 @else
 <div class="overflow-x-auto">
-    <table class="min-w-full divide-y divide-slate-100">
-        <thead class="bg-slate-50/70">
+    <table class="min-w-full divide-y divide-white/10">
+        <thead class="bg-[#17171f]/95 border-b border-white/10">
             <tr>
-                <th class="th">Order</th>
-                @isset($showMerchant)<th class="th">Merchant</th>@endisset
-                <th class="th">Customer</th>
-                <th class="th text-right">Amount</th>
-                <th class="th">Status</th>
-                <th class="th">UTR</th>
-                <th class="th">Date</th>
+                <th class="th text-slate-300 font-bold">Order</th>
+                @isset($showMerchant)<th class="th text-slate-300 font-bold">Merchant</th>@endisset
+                <th class="th text-slate-300 font-bold">Customer</th>
+                <th class="th text-right text-slate-300 font-bold">Amount</th>
+                <th class="th text-slate-300 font-bold">Status</th>
+                <th class="th text-slate-300 font-bold">UTR</th>
+                <th class="th text-slate-300 font-bold">Date</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100 bg-white">
+        <tbody class="divide-y divide-white/5 bg-transparent">
             @foreach ($orders as $order)
-                <tr class="hover:bg-slate-50/80 cursor-pointer transition" data-href="{{ route('orders.show', $order) }}">
+                <tr class="hover:bg-white/5 cursor-pointer transition-colors" data-href="{{ route('orders.show', $order) }}">
                     <td class="td">
-                        <a href="{{ route('orders.show', $order) }}" class="font-mono text-[13px] font-medium text-slate-900 hover:text-brand-600">{{ $order->order_no }}</a>
+                        <a href="{{ route('orders.show', $order) }}" class="font-mono text-[13px] font-bold text-white hover:text-[#38bdf8] transition-colors">{{ $order->order_no }}</a>
                         @if ($order->client_order_id !== $order->order_no)
-                            <div class="text-xs text-slate-500 mt-0.5">Ref: {{ $order->client_order_id }}</div>
+                            <div class="text-xs text-slate-400 mt-0.5 font-mono">Ref: {{ $order->client_order_id }}</div>
                         @endif
                     </td>
-                    @isset($showMerchant)<td class="td text-slate-700">{{ $order->user->displayName() }}</td>@endisset
-                    <td class="td text-slate-600">{{ $order->customer_name ?: ($order->customer_mobile ?: '—') }}</td>
-                    <td class="td text-right font-semibold text-slate-900 tabular-nums">₹{{ number_format($order->amount, 2) }}</td>
+                    @isset($showMerchant)<td class="td text-slate-200 font-medium">{{ $order->user->displayName() }}</td>@endisset
+                    <td class="td text-slate-200 font-medium">{{ $order->customer_name ?: ($order->customer_mobile ?: '—') }}</td>
+                    <td class="td text-right font-bold text-white tabular-nums text-sm">₹{{ number_format($order->amount, 2) }}</td>
                     <td class="td"><x-status :status="$order->status" /></td>
-                    <td class="td font-mono text-xs text-slate-600">
+                    <td class="td font-mono text-xs text-slate-300">
                         @if ($order->status === 'review')
-                            ••••••••{{ substr($order->customer_utr, -4) }}<div class="font-sans text-[11px] text-sky-600">submitted by customer</div>
+                            ••••••••{{ substr($order->customer_utr, -4) }}<div class="font-sans text-[11px] text-[#38bdf8]">submitted by customer</div>
                         @else
                             {{ $order->utr ?? '—' }}
                         @endif
                     </td>
-                    <td class="td text-slate-500 whitespace-nowrap">
-                        <div>{{ $order->created_at->format('d M Y') }}</div>
-                        <div class="text-xs">{{ $order->created_at->format('h:i A') }}</div>
+                    <td class="td text-slate-300 whitespace-nowrap">
+                        <div class="text-white font-medium">{{ $order->created_at->format('d M Y') }}</div>
+                        <div class="text-xs text-slate-400">{{ $order->created_at->format('h:i A') }}</div>
                     </td>
                 </tr>
             @endforeach

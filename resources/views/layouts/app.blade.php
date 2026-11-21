@@ -93,7 +93,7 @@
                         <a href="@yield('back')" class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-[#38bdf8] mb-2 transition-colors"><x-icon name="arrow-left" class="w-3.5 h-3.5" /> Back</a>
                     @endif
                     <h1 class="text-2xl font-bold tracking-tight text-white truncate">@yield('title')</h1>
-                    @hasSection('subtitle')<p class="mt-1 text-xs text-slate-400">@yield('subtitle')</p>@endif
+                    @hasSection('subtitle')<p class="mt-1.5 text-sm font-medium text-slate-300">@yield('subtitle')</p>@endif
                 </div>
                 <div class="flex w-full flex-wrap items-center gap-2 sm:w-auto">@yield('actions')</div>
             </div>
