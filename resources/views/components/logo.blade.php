@@ -1,7 +1,9 @@
 @props(['dark' => false])
 <span {{ $attributes->merge(['class' => 'inline-flex items-center gap-2.5']) }}>
     <span class="grid place-items-center w-8 h-8 rounded-lg bg-[#38bdf8] text-[#041419] shadow-sm shadow-[#38bdf8]/40">
-        <svg viewBox="0 0 24 24" class="w-[18px] h-[18px]" fill="currentColor"><path d="M13.5 2 4 14h6.5L9.5 22 19 10h-6.5z"/></svg>
+        <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.33-6 4Z"/>
+        </svg>
     </span>
-    <span class="font-bold tracking-tight text-[17px] text-[#fafafc]">{{ config('app.name') }}</span>
+    <span class="font-bold tracking-tight text-[17px] text-[#fafafc]">Avinya<span class="text-[#38bdf8]">Pay</span></span>
 </span>
