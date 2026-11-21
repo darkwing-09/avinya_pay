@@ -38,6 +38,25 @@ class PaytmBusinessVerifier implements Verifier
             return VerificationResult::pending(['error' => 'Paytm MID not configured', 'code' => 'missing_mid']);
         }
 
+        // 1. Direct Cloud-Native Gmail Receipt Verification (fast & authoritative)
+        try {
+            if (app(\App\Services\GmailReceiptService::class)->checkOrder($order)) {
+                $order->refresh();
+                if ($order->status === Order::PAID) {
+                    return VerificationResult::paid([
+                        'paid' => true,
+                        'amount' => (string) $order->amount,
+                        'utr' => $order->utr,
+                        'provider_txn_id' => $order->utr,
+                        'paid_at' => $order->paid_at?->toIso8601String() ?? now()->toIso8601String(),
+                        'verified_by' => 'gmail_agent',
+                    ]);
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Paytm Gmail receipt check exception: ' . $e->getMessage());
+        }
+
         try {
             $response = Http::timeout(10)->acceptJson()->get(config('gateway.paytm_status_url'), [
                 'JsonData' => json_encode(['MID' => $mid, 'ORDERID' => $order->order_no]),

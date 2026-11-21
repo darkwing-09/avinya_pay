@@ -212,7 +212,7 @@ class SendWebhook implements ShouldQueue
         $errorLabel = null;
 
         try {
-            $response = Http::timeout(15)
+            $http = Http::timeout(10)
                 ->connectTimeout(5)
                 ->withoutRedirecting()
                 ->withHeaders([
@@ -222,9 +222,14 @@ class SendWebhook implements ShouldQueue
                     'X-Event' => $this->event,
                     'X-Event-Id' => $payload['event_id'],
                 ])
-                ->withBody($body, 'application/json')
-                ->withOptions(['curl' => [CURLOPT_RESOLVE => [$resolveEntry]]])
-                ->post($webhookUrl);
+                ->withBody($body, 'application/json');
+
+            // Only use CURLOPT_RESOLVE if host is not a multi-region Anycast cloud like vercel.app
+            if (! str_ends_with($safe['host'], 'vercel.app') && ! str_ends_with($safe['host'], 'onrender.com')) {
+                $http = $http->withOptions(['curl' => [CURLOPT_RESOLVE => [$resolveEntry]]]);
+            }
+
+            $response = $http->post($webhookUrl);
 
             $code = $response->status();
 
