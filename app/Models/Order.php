@@ -186,6 +186,33 @@ class Order extends Model
             : route('pay.show', $this);
     }
 
+    public function agentSignal(): ?PaymentSignal
+    {
+        return PaymentSignal::where('matched_order_id', $this->id)
+            ->orWhere('order_id', $this->order_no)
+            ->orWhere('order_id', $this->client_order_id)
+            ->latest('id')
+            ->first();
+    }
+
+    public function getAgentOrderIdAttribute(): ?string
+    {
+        if (!empty($this->attributes['agent_order_id'])) {
+            return $this->attributes['agent_order_id'];
+        }
+        $signal = $this->agentSignal();
+        return $signal?->order_id ?: ($this->status === self::PAID ? $this->order_no : null);
+    }
+
+    public function getAgentUtrAttribute(): ?string
+    {
+        if (!empty($this->attributes['agent_utr'])) {
+            return $this->attributes['agent_utr'];
+        }
+        $signal = $this->agentSignal();
+        return $signal?->utr ?: ($this->utr ?: ($this->customer_utr ?: null));
+    }
+
     /**
      * Shape returned by the API and sent in webhooks.
      */
@@ -194,6 +221,8 @@ class Order extends Model
         return [
             'order_id' => $this->order_no,
             'client_order_id' => $this->client_order_id,
+            'agent_order_id' => $this->agent_order_id,
+            'agent_utr' => $this->agent_utr,
             'amount' => $this->amount,
             'currency' => 'INR',
             'status' => $this->status,

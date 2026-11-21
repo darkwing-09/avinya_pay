@@ -101,18 +101,43 @@ class PaymentVerificationAgent
             $order = Order::where(function ($q) use ($signal) {
                 $q->where('order_no', $signal->order_id)
                   ->orWhere('client_order_id', $signal->order_id);
-            })->whereIn('status', [Order::PENDING, Order::REVIEW, Order::EXPIRED])->first();
+            })->first();
+
+            if ($order) {
+                $signal->update([
+                    'matched_order_id' => $order->id,
+                    'status' => 'matched',
+                ]);
+
+                if ($order->status !== Order::PAID) {
+                    return $this->confirmPayment($order, $signal);
+                }
+
+                // If already marked paid, still link UTR if available
+                if ($signal->utr && ! $order->utr) {
+                    $order->update(['utr' => $signal->utr]);
+                }
+
+                return $order;
+            }
         }
 
         // Secondary: Match by customer-submitted UTR if Order ID was not in the note
         if (! $order && $signal->utr) {
-            $order = Order::where('customer_utr', $signal->utr)
-                ->whereIn('status', [Order::PENDING, Order::REVIEW, Order::EXPIRED])
-                ->first();
-        }
+            $order = Order::where('customer_utr', $signal->utr)->first();
 
-        if ($order) {
-            return $this->confirmPayment($order, $signal);
+            if ($order) {
+                $signal->update([
+                    'matched_order_id' => $order->id,
+                    'status' => 'matched',
+                ]);
+
+                if ($order->status !== Order::PAID) {
+                    return $this->confirmPayment($order, $signal);
+                }
+
+                return $order;
+            }
         }
 
         return null;

@@ -103,6 +103,17 @@ php artisan tinker --execute="
         \App\Models\Order::whereIn('id', \$expired)->delete();
         echo 'Purged ' . \$expired->count() . ' expired orders.' . PHP_EOL;
     }
+
+    // Link any unlinked payment signals to their matching orders
+    foreach (\App\Models\PaymentSignal::whereNotNull('order_id')->get() as \$sig) {
+        \$ord = \App\Models\Order::where('order_no', \$sig->order_id)->orWhere('client_order_id', \$sig->order_id)->first();
+        if (\$ord) {
+            \$sig->update(['matched_order_id' => \$ord->id, 'status' => 'matched']);
+            if (\$sig->utr && ! \$ord->utr) {
+                \$ord->update(['utr' => \$sig->utr]);
+            }
+        }
+    }
 " 2>/dev/null || true
 
 chown www-data:www-data /var/www/html/.env /var/www/html/storage/installed 2>/dev/null || true

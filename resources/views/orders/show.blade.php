@@ -7,9 +7,17 @@
 @endsection
 
 @php
+    $agentSignal = $order->agentSignal();
+    $agentOrderId = $order->agent_order_id;
+    $agentUtr = $order->agent_utr;
+
     $details = [
         'Order ID' => [$order->order_no, true],
         'Your reference' => [$order->client_order_id, true],
+        "Agent's order ID" => [$agentOrderId, true],
+        "Agent's UTR number" => [$agentUtr, true],
+        'Customer mobile' => [$order->customer_mobile, false],
+        'Customer email' => [$order->customer_email, false],
         'Environment' => [strtoupper($order->environment).($order->environment === 'sandbox' ? ' · TEST ONLY' : ''), false],
         'Payment account' => [$order->paymentAccount ? $order->paymentAccount->label.' · '.($order->paymentAccount->upi_id ?? $order->paymentAccount->providerLabel()) : 'Internal TEST simulator', false],
         'Verification' => [$order->verified_by === 'admin_override' ? 'Administrator override' : ($order->paymentAccount?->providerLabel() ?? 'Sandbox simulation'), false],
@@ -25,8 +33,6 @@
 
     $details['Customer-submitted UTR'] = [$order->customer_utr ? ($order->status === 'review' ? '••••••••'.substr($order->customer_utr, -4) : $order->customer_utr).($order->utr_attempts > 1 ? " (attempt {$order->utr_attempts})" : '') : null, true];
     $details['Customer name'] = [$order->customer_name, false];
-    $details['Customer mobile'] = [$order->customer_mobile, false];
-    $details['Customer email'] = [$order->customer_email, false];
     $details['Note'] = [$order->note, false];
     $timeline = [['Order created', $order->created_at, 'plus', 'bg-slate-100 text-slate-600']];
     if ($order->utr_submitted_at) {
@@ -112,13 +118,22 @@
 @endif
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <div class="lg:col-span-2 space-y-6">
-        <div class="card">
-            <div class="card-header"><div class="card-title">Payment details</div></div>
+        <div class="card bg-[#101016]/95 border border-white/10 shadow-lg">
+            <div class="card-header border-b border-white/10"><div class="card-title text-base font-bold text-white">Payment details</div></div>
             <dl class="grid grid-cols-1 sm:grid-cols-2">
                 @foreach ($details as $label => [$value, $mono])
-                    <div class="px-5 py-3.5 border-b border-slate-100 {{ $loop->odd ? 'sm:border-r' : '' }}">
-                        <dt class="text-xs font-medium text-slate-500">{{ $label }}</dt>
-                        <dd class="mt-1 text-sm text-slate-900 break-all {{ $mono && $value ? 'font-mono' : '' }}">{{ $value ?: '—' }}</dd>
+                    <div class="px-5 py-3.5 border-b border-white/10 {{ $loop->odd ? 'sm:border-r' : '' }}">
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400">{{ $label }}</dt>
+                        <dd class="mt-1 text-sm text-white break-all {{ $mono && $value ? 'font-mono text-[#38bdf8] font-bold' : 'font-medium' }}">
+                            @if ($value)
+                                {{ $value }}
+                                @if (str_contains($label, "Agent's") && $agentSignal)
+                                    <span class="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-sans font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Gmail</span>
+                                @endif
+                            @else
+                                <span class="text-slate-500">—</span>
+                            @endif
+                        </dd>
                     </div>
                 @endforeach
             </dl>
@@ -250,4 +265,25 @@
         @endif
     </div>
 </div>
+
+@if ($order->status !== 'paid' || empty($agentOrderId))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let pollTimer = setInterval(async function() {
+            try {
+                let res = await fetch("{{ route('orders.show', $order) }}", {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                });
+                if (res.ok) {
+                    let data = await res.json();
+                    if (data.status === 'paid' || data.agent_order_id) {
+                        clearInterval(pollTimer);
+                        window.location.reload();
+                    }
+                }
+            } catch (e) {}
+        }, 2000);
+    });
+</script>
+@endif
 @endsection

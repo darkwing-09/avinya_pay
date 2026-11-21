@@ -85,6 +85,18 @@ class OrderController extends Controller
         // Admin can view any order (read-only); merchants see only their own.
         $this->authorizeView($request, $order);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'order_no' => $order->order_no,
+                'status' => $order->status,
+                'paid_at' => $order->paid_at,
+                'agent_order_id' => $order->agent_order_id,
+                'agent_utr' => $order->agent_utr,
+                'customer_mobile' => $order->customer_mobile,
+                'customer_email' => $order->customer_email,
+            ]);
+        }
+
         $order->load('paymentAccount');
         $order->setRelation('webhookLogs', app(WebhookHistoryService::class)->getAllLogsForOrder($order));
 
