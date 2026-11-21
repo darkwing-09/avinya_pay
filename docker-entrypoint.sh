@@ -80,7 +80,7 @@ if [ -n "$DB_HOST" ]; then
             \App\Models\PaymentAccount::create([
                 'user_id' => \$u->id,
                 'label' => 'Primary UPI',
-                'upi_id' => 'paytmqr281005050101cjehi3txn84r@paytm',
+                'upi_id' => env('DEFAULT_UPI_ID', 'Yourupi@upi'),
                 'provider' => 'paytm_business',
                 'is_active' => true,
                 'is_default' => true,

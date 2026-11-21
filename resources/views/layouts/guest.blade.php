@@ -50,7 +50,7 @@
                     <div>
                         <h2 class="font-bold text-white text-base">Pay Varun</h2>
                         <p class="text-xs text-slate-400 mt-0.5">Scan with GPay, PhonePe, Paytm, BHIM or any UPI app.</p>
-                        <span class="inline-block mt-2 font-mono text-[11px] font-semibold text-[#38bdf8] bg-[#38bdf8]/10 border border-[#38bdf8]/20 px-2.5 py-0.5 rounded-full select-all">paytmqr281005050101cjehi3txn84r@paytm</span>
+                        <span class="inline-block mt-2 font-mono text-[11px] font-semibold text-[#38bdf8] bg-[#38bdf8]/10 border border-[#38bdf8]/20 px-2.5 py-0.5 rounded-full select-all">Yourupi@upi</span>
                     </div>
                 </div>
             </div>

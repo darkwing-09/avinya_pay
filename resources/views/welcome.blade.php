@@ -155,7 +155,7 @@
                                 {{-- UPI ID Badge --}}
                                 <div class="mt-3">
                                     <span class="inline-block font-mono text-[11px] font-semibold text-[#38bdf8] bg-[#38bdf8]/10 border border-[#38bdf8]/20 px-3 py-1 rounded-full select-all">
-                                        paytmqr281005050101cjehi3txn84r@paytm
+                                        Yourupi@upi
                                     </span>
                                 </div>
                             </div>
