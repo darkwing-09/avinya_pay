@@ -139,7 +139,7 @@
                                     
                                     {{-- Center Icon Badge --}}
                                     <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                        <span class="w-9 h-9 rounded-lg bg-[#38bdf8] flex items-center justify-center text-[#041419] shadow-lg">
+                                        <span class="w-9 h-9 rounded-lg bg-white text-black flex items-center justify-center shadow-lg shadow-white/10">
                                             <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.33-6 4Z"/>
                                             </svg>
@@ -609,7 +609,7 @@ print(<span class="text-emerald-400">f"Checkout URL: {order['payment_url']}"</sp
         <div class="absolute inset-0 pointer-events-none -z-10" style="background: radial-gradient(600px circle at 50% 100%, rgba(56, 189, 248, 0.15), transparent 70%);"></div>
 
         <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
-            <span class="w-12 h-12 rounded-2xl bg-[#38bdf8] text-[#041419] inline-flex items-center justify-center shadow-lg shadow-[#38bdf8]/30 mb-6">
+            <span class="w-12 h-12 rounded-2xl bg-white text-black inline-flex items-center justify-center shadow-lg shadow-white/20 mb-6">
                 <svg viewBox="0 0 24 24" class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.33-6 4Z"/>
                 </svg>
