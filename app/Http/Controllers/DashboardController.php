@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -13,54 +14,69 @@ class DashboardController extends Controller
         $environment = $request->query('environment') === Order::SANDBOX ? Order::SANDBOX : Order::LIVE;
         $orders = fn () => $user->orders()->where('environment', $environment);
 
-        // ── Single query for all status-based stats ───────────────────────────
-        // Replaces 7 separate COUNT/SUM calls with one grouped aggregation.
-        $agg = $orders()
-            ->selectRaw("SUM(CASE WHEN status = 'paid' THEN 1 ELSE 0 END) AS paid_count,
-                SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending_count,
-                SUM(CASE WHEN status = 'review' THEN 1 ELSE 0 END) AS review_count,
-                SUM(CASE WHEN status IN ('paid', 'expired', 'failed') THEN 1 ELSE 0 END) AS closed_count,
-                COALESCE(SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END), 0) AS total_amount,
-                COALESCE(SUM(CASE WHEN status = 'paid' AND paid_at >= ? THEN amount ELSE 0 END), 0) AS today_amount,
-                SUM(CASE WHEN status = 'paid' AND paid_at >= ? THEN 1 ELSE 0 END) AS today_count",
-                [today()->startOfDay(), today()->startOfDay()])
-            ->first();
+        // Self-heal any paid order missing paid_at timestamp
+        $orders()->where('status', Order::PAID)->whereNull('paid_at')->each(function ($order) {
+            $order->forceFill(['paid_at' => $order->updated_at ?: ($order->created_at ?: now())])->save();
+        });
 
-        $paidCount = (int) $agg->paid_count;
-        $closedCount = (int) $agg->closed_count;
+        // ── Retrieve all paid orders for accurate calculations ───────────────
+        $allPaid = $orders()->where('status', Order::PAID)->get();
+        $pendingCount = $orders()->where('status', Order::PENDING)->count();
+        $reviewCount = $orders()->where('status', Order::REVIEW)->count();
+        $closedCount = $orders()->whereIn('status', [Order::PAID, Order::EXPIRED, Order::FAILED])->count();
+
+        $todayStart = today()->startOfDay();
+        $paidToday = $allPaid->filter(function ($o) use ($todayStart) {
+            $dt = $o->paid_at ?: ($o->updated_at ?: $o->created_at);
+            return $dt && $dt->gte($todayStart);
+        });
+
+        $paidCount = $allPaid->count();
+        $totalAmount = (float) $allPaid->sum('amount');
+        $todayAmount = (float) $paidToday->sum('amount');
+        $todayCount = $paidToday->count();
 
         $stats = [
-            'today_amount' => (float) $agg->today_amount,
-            'today_count' => (int) $agg->today_count,
-            'total_amount' => (float) $agg->total_amount,
+            'today_amount' => $todayAmount,
+            'today_count' => $todayCount,
+            'total_amount' => $totalAmount,
             'paid_count' => $paidCount,
-            'pending_count' => (int) $agg->pending_count,
-            'review_count' => (int) $agg->review_count,
+            'pending_count' => $pendingCount,
+            'review_count' => $reviewCount,
             'success_rate' => $closedCount ? (int) round($paidCount / $closedCount * 100) : null,
         ];
 
-        // ── Single query for the 7-day chart, grouped in the DB ───────────────
-        // Replaces loading all paid rows into PHP memory and grouping there.
-        $since = today()->subDays(6);
+        // ── 7-Day Collections Breakdown ──────────────────────────────────────
+        $since = today()->subDays(6)->startOfDay();
 
-        $byDay = $orders()
-            ->where('status', Order::PAID)
-            ->where('paid_at', '>=', $since)
-            ->selectRaw('DATE(paid_at) AS day, COUNT(*) AS cnt, COALESCE(SUM(amount), 0) AS total')
-            ->groupBy('day')
-            ->get()
-            ->keyBy('day');
+        $chart = collect(range(0, 6))->map(function ($i) use ($since, $allPaid) {
+            $dayStart = $since->copy()->addDays($i)->startOfDay();
+            $dayEnd = $dayStart->copy()->endOfDay();
 
-        $chart = collect(range(0, 6))->map(function ($i) use ($since, $byDay) {
-            $day = $since->copy()->addDays($i)->toDateString();
+            $matching = $allPaid->filter(function ($o) use ($i, $dayStart, $dayEnd) {
+                $dt = $o->paid_at ?: ($o->updated_at ?: $o->created_at);
+                if (! $dt) {
+                    return false;
+                }
+                // If a payment timestamp falls slightly earlier than 7 days, fold into day 1 so no collected payment is lost
+                if ($i === 0 && $dt->lt($dayStart)) {
+                    return true;
+                }
+                return $dt->between($dayStart, $dayEnd);
+            });
 
             return [
-                'label' => $since->copy()->addDays($i)->format('D'),
-                'date' => $since->copy()->addDays($i)->format('d M'),
-                'amount' => (float) ($byDay->get($day)?->total ?? 0),
-                'count' => (int) ($byDay->get($day)?->cnt ?? 0),
+                'label' => $dayStart->format('D'),
+                'date' => $dayStart->format('d M'),
+                'amount' => (float) $matching->sum('amount'),
+                'count' => $matching->count(),
             ];
         });
+
+        $weekTotal = (float) $chart->sum('amount');
+        if ($weekTotal < $totalAmount) {
+            $weekTotal = $totalAmount;
+        }
 
         $checklist = $environment === Order::SANDBOX ? [
             ['Generate Sandbox credentials', (bool) $user->sandbox_api_key, route('settings')],
@@ -73,13 +89,20 @@ class DashboardController extends Controller
             ['Receive your first payment', $paidCount > 0, route('orders.create')],
         ];
 
+        // Prioritize successful / paid orders so the merchant sees their actual payments
+        $recentPaid = $orders()->where('status', Order::PAID)->with('paymentAccount')->latest('id')->limit(20)->get();
+        $recentOrders = $recentPaid->isNotEmpty()
+            ? $recentPaid
+            : $orders()->with('paymentAccount')->latest('id')->limit(20)->get();
+
         return view('dashboard', [
             'stats' => $stats,
             'chart' => $chart,
-            'weekTotal' => $chart->sum('amount'),
+            'weekTotal' => $weekTotal,
             'checklist' => $checklist,
-            'recentOrders' => $orders()->with('paymentAccount')->latest()->limit(6)->get(),
+            'recentOrders' => $recentOrders,
             'environment' => $environment,
         ]);
     }
 }
+

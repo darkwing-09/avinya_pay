@@ -113,10 +113,10 @@
     </div>
 </div>
 
-{{-- Recent orders --}}
+{{-- Recent successful payments --}}
 <div class="card overflow-hidden bg-[#101016]/95 border border-white/10 shadow-lg">
     <div class="card-header border-b border-white/10">
-        <div class="card-title text-base font-bold text-white">Recent orders</div>
+        <div class="card-title text-base font-bold text-white">Recent successful payments</div>
         <a href="{{ route('orders.index', ['environment' => $environment]) }}" class="text-sm font-semibold text-[#38bdf8] hover:text-[#7dd3fc] inline-flex items-center gap-1 transition-colors">View all <x-icon name="arrow-right" class="w-4 h-4" /></a>
     </div>
     @include('orders._table', ['orders' => $recentOrders])

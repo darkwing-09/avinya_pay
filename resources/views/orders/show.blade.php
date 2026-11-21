@@ -136,20 +136,20 @@
                     @unless ($webhookUrl)<a href="{{ route('settings') }}" class="btn btn-secondary">Set webhook URL</a>@endunless
                 </x-empty>
             @else
-                <div class="overflow-x-auto"><table class="min-w-full divide-y divide-slate-100">
-                    <thead class="bg-slate-50/70"><tr><th class="th">Event</th><th class="th">Attempt</th><th class="th">Response</th><th class="th">Time</th></tr></thead>
-                    <tbody class="divide-y divide-slate-100">
+                <div class="overflow-x-auto"><table class="min-w-full divide-y divide-white/10">
+                    <thead class="bg-[#17171f]/95 border-b border-white/10"><tr><th class="th text-slate-300 font-bold">Event</th><th class="th text-slate-300 font-bold">Attempt</th><th class="th text-slate-300 font-bold">Response</th><th class="th text-slate-300 font-bold">Time</th></tr></thead>
+                    <tbody class="divide-y divide-white/5 bg-transparent">
                     @foreach ($order->webhookLogs->sortByDesc('id') as $log)
                         <tr>
-                            <td class="td font-mono text-xs">{{ $log->event }}</td>
-                            <td class="td text-slate-600">#{{ $log->attempt }}</td>
+                            <td class="td font-mono text-xs text-white">{{ $log->event }}</td>
+                            <td class="td text-slate-300">#{{ $log->attempt }}</td>
                             <td class="td">
-                                <span class="inline-flex items-center gap-1.5 text-xs font-medium {{ $log->success ? 'text-emerald-700' : 'text-red-700' }}">
+                                <span class="inline-flex items-center gap-1.5 text-xs font-semibold {{ $log->success ? 'text-emerald-400' : 'text-red-400' }}">
                                     <span class="w-1.5 h-1.5 rounded-full {{ $log->success ? 'bg-emerald-500' : 'bg-red-500' }}"></span>{{ $log->response_code ?? 'No response' }}
                                 </span>
                                 @if($log->error_label)<div class="text-xs text-slate-400 font-mono">{{ $log->error_label }}</div>@endif
                             </td>
-                            <td class="td text-slate-500 whitespace-nowrap">{{ $log->created_at->format('d M, h:i:s A') }}</td>
+                            <td class="td text-slate-300 whitespace-nowrap">{{ $log->created_at->format('d M, h:i:s A') }}</td>
                         </tr>
                     @endforeach
                     </tbody>
@@ -159,16 +159,16 @@
     </div>
 
     <div class="space-y-6">
-        <div class="card">
-            <div class="card-header"><div class="card-title">Timeline</div></div>
+        <div class="card bg-[#101016]/95 border border-white/10 shadow-lg">
+            <div class="card-header border-b border-white/10"><div class="card-title text-base font-bold text-white">Timeline</div></div>
             <ol class="p-5 space-y-5">
                 @foreach ($timeline as [$label, $time, $icon, $tone])
                     <li class="relative flex gap-3">
-                        @unless ($loop->last)<span class="absolute left-4 top-8 -bottom-5 w-px bg-slate-200"></span>@endunless
+                        @unless ($loop->last)<span class="absolute left-4 top-8 -bottom-5 w-px bg-white/10"></span>@endunless
                         <span class="grid place-items-center w-8 h-8 rounded-full {{ $tone }} shrink-0"><x-icon :name="$icon" class="w-4 h-4" /></span>
                         <div class="pt-1">
-                            <div class="text-sm font-medium text-slate-900">{{ $label }}</div>
-                            @if ($time)<div class="text-xs text-slate-500 mt-0.5">{{ $time->format('d M Y, h:i:s A') }}</div>@endif
+                            <div class="text-sm font-semibold text-white">{{ $label }}</div>
+                            @if ($time)<div class="text-xs text-slate-400 mt-0.5">{{ $time->format('d M Y, h:i:s A') }}</div>@endif
                         </div>
                     </li>
                 @endforeach
